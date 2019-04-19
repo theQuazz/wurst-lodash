@@ -2,7 +2,7 @@
 
 Functional Programming Utilities for [WurstScript](https://wurstlang.org/)
 
-[![CircleCI](https://circleci.com/gh/theQuazz/wurst-fp.svg?style=svg)](https://circleci.com/gh/theQuazz/wurst-fp)
+[![CircleCI](https://circleci.com/gh/theQuazz/lodash.svg?style=svg)](https://circleci.com/gh/theQuazz/lodash)
 
 ## Package `Lodash`
 
