@@ -2,7 +2,7 @@ version: 2
 
 jobs:
   build:
-    working_directory: ~/island-troll-tribes
+    working_directory: ~/wurst-fp
 
     docker:
       - image: frotty/wurstscript
