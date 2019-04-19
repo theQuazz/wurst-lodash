@@ -2,6 +2,8 @@
 
 Functional Programming Utilities for WurstScript
 
+[![CircleCI](https://circleci.com/gh/theQuazz/wurst-fp.svg?style=svg)](https://circleci.com/gh/theQuazz/wurst-fp)
+
 ## Package `WurstFP`
 
 This library provides utility functions for operating on `LinkedList`
