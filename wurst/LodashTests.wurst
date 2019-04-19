@@ -1,8 +1,8 @@
-package WurstFPTests
+package LodashTests
 import LinkedList
 import HashMap
-import WurstFP
-import WurstFPExtensions
+import Lodash
+import LodashExtensions
 
 @Test
 function testIntersection()

@@ -1,10 +1,10 @@
-# Wurst FP
+# Lodash
 
 Functional Programming Utilities for [WurstScript](https://wurstlang.org/)
 
 [![CircleCI](https://circleci.com/gh/theQuazz/wurst-fp.svg?style=svg)](https://circleci.com/gh/theQuazz/wurst-fp)
 
-## Package `WurstFP`
+## Package `Lodash`
 
 This library provides utility functions for operating on `LinkedList`
 and `IterableMap` objects as well as utility classes `Range` and `Pair`.
@@ -64,7 +64,7 @@ function pair<A, B>(A a, B b) returns Pair<A, B>
 
 Creates a tuple
 
-## Package `WurstFPExtensions`
+## Package `LodashExtensions`
 
 This package provides various extension methods for `LinkedList` and `IterableMap`. Similar to the WurstFP API, these methods will attempt to
 destroy the closures and objects they are invoked upon and passed.

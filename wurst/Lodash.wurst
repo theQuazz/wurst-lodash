@@ -1,4 +1,4 @@
-package WurstFP
+package Lodash
 import LinkedList
 import HashMap
 import HashSet

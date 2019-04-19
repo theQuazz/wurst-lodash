@@ -1,4 +1,4 @@
 ---
-projectName: Wurst Functional Programming Utilities
+projectName: Lodash
 dependencies:
 - https://github.com/wurstscript/WurstStdlib2

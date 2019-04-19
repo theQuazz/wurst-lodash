@@ -1,8 +1,8 @@
-package WurstFPExtensions
+package LodashExtensions
 import LinkedList
 import HashMap
 import HashSet
-import WurstFP
+import Lodash
 
 /**
  * Checks for equality of two lists
