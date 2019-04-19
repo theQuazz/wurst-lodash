@@ -104,7 +104,7 @@ public function IterableMap<S, T>.map<S, T, R>(BiFunction<S, T, R> transform) re
  * Flattens list a level less deep.
  */
 public function LinkedList<LinkedList<T>>.flatten<T>() returns LinkedList<T>
-    return flatten(list)
+    return flatten(this)
 
 /**
  * Creates a slice of list with numELems elements dropped from the beginning.

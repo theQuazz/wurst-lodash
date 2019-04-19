@@ -1,4 +1,6 @@
 package WurstFPTests
+import LinkedList
+import HashMap
 import WurstFP
 import WurstFPExtensions
 
@@ -25,25 +27,6 @@ function testRange()
     range.hasNext().assertFalse()
 
 @Test
-public function testMapValues()
-    let maps = asOwnedList(
-        new IterableMap<int, int>()..put(1, 2),
-        new IterableMap<int, int>()..put(3, 4),
-        new IterableMap<int, int>()..put(5, 6)
-    )
-
-    let valuesOf = Function.owned<IterableMap<int, int>, LinkedList<int>>(elem -> values(elem))
-    let mapValues = map(valuesOf)
-    let values = flatten(mapValues.call(maps))
-
-    values.size().assertEquals(3)
-    values.get(0).assertEquals(2)
-    values.get(1).assertEquals(4)
-    values.get(2).assertEquals(6)
-
-    destroy mapValues
-
-@Test
 public function testFlatten()
     let lists = asList(
         asList(
@@ -55,17 +38,6 @@ public function testFlatten()
             asList(6, 7, 8, 9, 10)
         )
     )
-
-    let mapFlatten = map(Function.owned(flatten<int>()))
-    let result = mapFlatten.call(lists)
-    result.size().assertEquals(2)
-    result.get(0).size().assertEquals(10)
-
-@Test
-function testTake2()
-    let ints = asList(1, 2, 3)
-    let take2 = take<int>(2)
-    take2.call(ints).size().assertEquals(2)
 
 @Test
 function testTake()
