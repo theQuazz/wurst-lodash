@@ -2,9 +2,70 @@
 
 Functional Programming Utilities for WurstScript
 
+## WurstFP API
+
+This library provides utility functions for operating on `LinkedList`
+and `IterableMap` objects as well as utility classes `Range` and `Pair`.
+These functions will attempt to destroy the lists and maps
+that they act upon unless they are explicitly owned. To own a list or map
+cast it to the `OwnedLinkedList` or `OwnedIterableMap` equivalent. To own
+a closure call the `.own` method on it. There are several convenience
+methods for owning closures of various arities, for example:
+
+```
+let myOwnedFunc = Function<int, string>.owned(x -> x.toString())
+```
+
+### `Range`
+
+```
+class Range
+```
+
+Represents a range of numbers. Can be iterated. Default `min` is `0`, default max is `INT_MAX`, default `incr` is `1`.
+
+### `range`
+
+```
+function range(int min, int max, int incr) returns Range
+
+function range(int min, int max) returns Range
+
+function range(int max) returns Range
+
+function range() returns Range
+```
+
+Creates a range which is iterable from start to finish by incr
+
+### `rangeStep`
+
+```
+function rangeStep(int max, int incr) returns Range
+```
+
+Creates a range which is iterable from 0 to finish by incr
+
+### `Pair`
+
+```
+class Pair<A, B>
+```
+
+A tuple which can be cast to index for use in data types
+
+### `pair`
+
+```
+function pair<A, B>(A a, B b) returns Pair<A, B>
+```
+
+Creates a tuple
+
 ## WurstFPExtensions API
 
-This package provides various extension methods for `LinkedList` and `IterableMap`
+This package provides various extension methods for `LinkedList` and `IterableMap`. Similar to the WurstFP API, these methods will attempt to
+destroy the closures and objects they are invoked upon and passed.
 
 ### `equals`
 

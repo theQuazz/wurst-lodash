@@ -4,6 +4,115 @@ import HashMap
 import HashSet
 
 /**
+ * Represents a range of numbers
+ */
+public class Range
+    let incr = 1
+    let start = 0
+    let finish = INT_MAX
+    var curr = start
+
+    /**
+     * Creates a range which is iterable from 0 to INT_MAX by 1
+     */
+    construct()
+
+    /**
+     * Creates a range which is iterable from start to finish by incr
+     */
+    construct(int start, int finish, int incr)
+        this.start = start
+        this.finish = finish
+        this.incr = incr
+        curr = start
+
+    /**
+     * Returns true iff finish has not been reached
+     */
+    function hasNext() returns bool
+        return incr > 0 ? curr < finish : curr > finish
+
+    /**
+     * Returns the next value in the sequence and increments the counter
+     */
+    function next() returns int
+        let ret = curr
+        curr += incr
+        return ret
+
+    /**
+     * Closes the iterator thus destroying the range
+     */
+    function close()
+        destroy this
+
+    /**
+     * Copies this iterator from its current position
+     */
+    function iterator() returns Range
+        return new Range(curr, finish, incr)
+
+    /**
+     * Converts the range to a list
+     */
+    function toList() returns LinkedList<int>
+        let lst = new LinkedList<int>()
+        for x from this
+            lst.add(x)
+        close()
+        return lst
+
+/**
+ * Creates a range which is iterable from start to finish by incr
+ */
+public function range(int min, int max, int incr) returns Range
+    return new Range(min, max, incr)
+
+/**
+ * Creates a range which is iterable from start to finish by 1
+ */
+public function range(int min, int max) returns Range
+    return new Range(min, max, 1)
+
+/**
+ * Creates a range which is iterable from 0 to finish by 1
+ */
+public function range(int max) returns Range
+    return new Range(0, max, 1)
+
+/**
+ * Creates a range which is iterable from 0 to INT_MAX by 1
+ */
+public function range() returns Range
+    return new Range()
+
+/**
+ * Creates a range which is iterable from 0 to max by incr
+ */
+public function rangeStep(int max, int incr) returns Range
+    return new Range(0, max, incr)
+
+/**
+ * A tuple which can be cast to index for use in data types
+ */
+public class Pair<A, B>
+    A a
+    B b
+
+    /**
+    * Creates a Pair
+    */
+    construct(A a, B b)
+        this.a = a
+        this.b = b
+
+/**
+ * Creates a tuple which can be cast to index for use in data types
+ */
+public function pair<A, B>(A a, B b) returns Pair<A, B>
+    return new Pair(a, b)
+
+/**
  * Prevents automatic cleanup of list
  */
 public class OwnedLinkedList<T> extends LinkedList<T>
@@ -448,26 +557,6 @@ public function zipObject<A, B>(LinkedList<A> a, LinkedList<B> b) returns Iterab
     return map
 
 /**
- * A tuple which can be cast to index for use in data types
- */
-public class Pair<A, B>
-    A a
-    B b
-
-    /**
-    * Creates a Pair
-    */
-    construct(A a, B b)
-        this.a = a
-        this.b = b
-
-/**
- * Creates a tuple which can be cast to index for use in data types
- */
-public function pair<A, B>(A a, B b) returns Pair<A, B>
-    return new Pair(a, b)
-
-/**
  * Creates a list of grouped elements, the first of which contains the first elements of the
  * given lists, the second of which contains the second elements of the given lists.
  */
@@ -489,95 +578,6 @@ public function zip<A, B>(LinkedList<A> a, LinkedList<B> b) returns LinkedList<P
  */
 public function LinkedList<A>.zip<A, B>(LinkedList<B> lst) returns LinkedList<Pair<A, B>>
     return zip(this, lst)
-
-/**
- * Represents a range of numbers
- */
-public class Range
-    let incr = 1
-    let start = 0
-    let finish = INT_MAX
-    var curr = start
-
-    /**
-     * Creates a range which is iterable from 0 to INT_MAX by 1
-     */
-    construct()
-
-    /**
-     * Creates a range which is iterable from start to finish by incr
-     */
-    construct(int start, int finish, int incr)
-        this.start = start
-        this.finish = finish
-        this.incr = incr
-        curr = start
-
-    /**
-     * Returns true iff finish has not been reached
-     */
-    function hasNext() returns bool
-        return incr > 0 ? curr < finish : curr > finish
-
-    /**
-     * Returns the next value in the sequence and increments the counter
-     */
-    function next() returns int
-        let ret = curr
-        curr += incr
-        return ret
-
-    /**
-     * Closes the iterator thus destroying the range
-     */
-    function close()
-        destroy this
-
-    /**
-     * Copies this iterator from its current position
-     */
-    function iterator() returns Range
-        return new Range(curr, finish, incr)
-
-    /**
-     * Converts the range to a list
-     */
-    function toList() returns LinkedList<int>
-        let lst = new LinkedList<int>()
-        for x from this
-            lst.add(x)
-        close()
-        return lst
-
-/**
- * Creates a range which is iterable from start to finish by incr
- */
-public function range(int min, int max, int incr) returns Range
-    return new Range(min, max, incr)
-
-/**
- * Creates a range which is iterable from start to finish by 1
- */
-public function range(int min, int max) returns Range
-    return new Range(min, max, 1)
-
-/**
- * Creates a range which is iterable from 0 to finish by 1
- */
-public function range(int max) returns Range
-    return new Range(0, max, 1)
-
-/**
- * Creates a range which is iterable from 0 to INT_MAX by 1
- */
-public function range() returns Range
-    return new Range()
-
-/**
- * Creates a range which is iterable from 0 to max by incr
- */
-public function rangeStep(int max, int incr) returns Range
-    return new Range(0, max, incr)
 
 /**
  * Creates a duplicate-free version of an list in which only the first occurrence
