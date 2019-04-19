@@ -1,6 +1,6 @@
 # Lodash
 
-Functional Programming Utilities for [WurstScript](https://wurstlang.org/)
+Functional Programming Utilities for [WurstScript](https://wurstlang.org/) inspired by [Lodash](https://lodash.com/docs/)
 
 [![CircleCI](https://circleci.com/gh/theQuazz/lodash.svg?style=svg)](https://circleci.com/gh/theQuazz/lodash)
 
