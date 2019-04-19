@@ -141,9 +141,11 @@ public abstract class Callable
     /**
      * Destroys this callable if it has not been owned
      */
-    function maybeFree()
+    function maybeFree() returns bool
         if cleanup
             destroy this
+            return true
+        return false
 
 /**
  * () -> nothing
@@ -229,19 +231,23 @@ public abstract class QuadFunction<S, T, U, V, R> extends Callable
 /**
  * Attempts to free list if it's not owned
  */
-public function LinkedList<T>.maybeFree<T>()
+public function LinkedList<T>.maybeFree<T>() returns bool
     if not this instanceof OwnedLinkedList<T>
         destroy this
+        return true
+    return false
 
 /**
  * Attempts to free map if it's not owned
  */
-public function IterableMap<K, V>.maybeFree<K, V>()
+public function IterableMap<K, V>.maybeFree<K, V>() returns bool
     if not this instanceof OwnedIterableMap<K, V>
         destroy this
+        return true
+    return false
 
 /**
- * Own a list preventing automatic deletion by WurstFP methods
+ * Creates an owned list preventing automatic deletion by WurstFP methods
  */
 public function asOwnedList<T>(vararg T ts) returns OwnedLinkedList<T>
     let ll = new OwnedLinkedList<T>
@@ -250,12 +256,32 @@ public function asOwnedList<T>(vararg T ts) returns OwnedLinkedList<T>
     return ll
 
 /**
+ * Own a list preventing automatic deletion by WurstFP methods
+ */
+public function ownList<T>(LinkedList<T> list) returns OwnedLinkedList<T>
+    let l = new OwnedLinkedList<T>
+    ..addAll(list)
+    destroy list
+    return l
+
+/**
+ * Own a list preventing automatic deletion by WurstFP methods
+ */
+public function ownMap<K, V>(IterableMap<K, V> map) returns OwnedIterableMap<K, V>
+    let m = new OwnedIterableMap<K, V>
+    ..addAll(map)
+    destroy map
+    return m
+
+/**
  * Checks for equality of two lists
  */
 public function equals<T>(LinkedList<T> a, LinkedList<T> b) returns bool
+    if a == b
+        return true
     if a == null or b == null or a.size() != b.size()
         return false
-    let iter = b.staticItr()
+    let iter = b.iterator()
     for elemA in a
         let elemB = iter.next()
         if elemA != elemB
@@ -265,7 +291,9 @@ public function equals<T>(LinkedList<T> a, LinkedList<T> b) returns bool
 /**
  * Checks for equality of two maps
  */
-public function equals<K, V>(IterableMap<K, V> a, IterableMap<K, V> b) returns bool
+public function mapEquals<K, V>(IterableMap<K, V> a, IterableMap<K, V> b) returns bool
+    if a == b
+        return true
     if a == null or b == null or a.size() != b.size()
         return false
     let iter = a.iterator()
@@ -274,6 +302,34 @@ public function equals<K, V>(IterableMap<K, V> a, IterableMap<K, V> b) returns b
             return false
     iter.close()
     return true
+
+/**
+ * Checks for equality of two pairs
+ */
+public function pairEquals<A, B>(Pair<A, B> a, Pair<A, B> b) returns bool
+    return a == b or a != null and b != null and a.a == b.a and a.b == b.b
+
+/**
+ * Checks for equality of two lists based on comparator
+ */
+public function equals<T>(LinkedList<T> a, LinkedList<T> b, BiFunction<T, T, bool> comparator) returns bool
+    if a == b
+        return true
+    if a == null or b == null or a.size() != b.size()
+        return false
+    let iter = b.iterator()
+    for elemA in a
+        let elemB = iter.next()
+        if not comparator.call(elemA, elemB)
+            return false
+    comparator.maybeFree()
+    return true
+
+/**
+ * Checks for equality of two lists of pairs
+ */
+public function pairListEquals<A, B>(LinkedList<Pair<A, B>> a, LinkedList<Pair<A, B>> b) returns bool
+    return equals(a, b, (x, y) -> pairEquals(x, y))
 
 /**
  * Creates a slice of list with elements taken from the beginning. Elements are taken until predicate returns falsey.
@@ -329,11 +385,11 @@ public function take<T>(int numElems, LinkedList<T> list) returns LinkedList<T>
  * where each successive invocation is supplied the return value of the previous. The order if iteration is from left
  * to right. The transform is invoked with two arguments: (accumulator, value)
  */
-public function foldl<Q, T>(Q startValue, BiFunction<T, Q, Q> transform, LinkedList<T> list) returns Q
+public function foldl<Q, T>(Q startValue, BiFunction<Q, T, Q> transform, LinkedList<T> list) returns Q
     var result = startValue
     let iter = list.iterator()
     for elem from iter
-        result = transform.call(elem, result)
+        result = transform.call(result, elem)
     iter.close()
     transform.maybeFree()
     list.maybeFree()
@@ -344,11 +400,11 @@ public function foldl<Q, T>(Q startValue, BiFunction<T, Q, Q> transform, LinkedL
  * where each successive invocation is supplied the return value of the previous. The order if iteration is from right
  * to left. The transform is invoked with two arguments: (accumulator, value)
  */
-public function foldr<Q, T>(Q startValue, BiFunction<T, Q, Q> transform, LinkedList<T> list) returns Q
+public function foldr<Q, T>(Q startValue, BiFunction<Q, T, Q> transform, LinkedList<T> list) returns Q
     var result = startValue
     let iter = list.backiterator()
     for elem from iter
-        result = transform.call(elem, result)
+        result = transform.call(result, elem)
     iter.close()
     transform.maybeFree()
     list.maybeFree()
@@ -409,20 +465,6 @@ public function values<T, Q>(IterableMap<T, Q> map) returns LinkedList<Q>
     return values
 
 /**
- * Creates a list of values by running each element in given list thru transform. The
- * transform is invoked with one argument: (value)
- */
-public function map<T, Q>(Function<T, Q> transform, LinkedList<T> list) returns LinkedList<Q>
-    let result = new LinkedList<Q>()
-    let iter = list.iterator()
-    for elem from iter
-        result.add(transform.call(elem))
-    iter.close()
-    transform.maybeFree()
-    list.maybeFree()
-    return result
-
-/**
  * Creates a list of values by running each element in collection thru transform. The
  * transform is invoked with two arguments: (value, index)
  */
@@ -442,7 +484,7 @@ public function map<T, Q>(BiFunction<T, int, Q> transform, LinkedList<T> list) r
 * Creates a list of values by running each element in map thru transform. The
 * transform is invoked with two arguments: (key, value)
  */
-public function map<S, T, R>(IterableMap<S, T> map, BiFunction<S, T, R> transform) returns LinkedList<R>
+public function mapMap<S, T, R>(BiFunction<S, T, R> transform, IterableMap<S, T> map) returns LinkedList<R>
     let res = new LinkedList<R>()
     let iter = map.iterator()
     for key from iter
@@ -500,13 +542,13 @@ public function filter<T>(Predicate<T> filter, LinkedList<T> list) returns Linke
  * Computes the sum of the values in list.
  */
 public function sum(LinkedList<int> list) returns int
-    return foldl(0, (elem, value) -> value + elem, list)
+    return foldl(0, (value, elem) -> value + elem, list)
 
 /**
  * Computes the sum of the values in list.
  */
 public function sum(LinkedList<real> list) returns real
-    return foldl(0.0, (elem, value) -> value + elem, list)
+    return foldl(0.0, (value, elem) -> value + elem, list)
 
 /**
  * Gets the length of list and maybe frees it
@@ -571,13 +613,6 @@ public function zip<A, B>(LinkedList<A> a, LinkedList<B> b) returns LinkedList<P
     a.maybeFree()
     b.maybeFree()
     return lst
-
-/**
- * Creates a list of grouped elements, the first of which contains the first elements of the
- * given lists, the second of which contains the second elements of the given lists.
- */
-public function LinkedList<A>.zip<A, B>(LinkedList<B> lst) returns LinkedList<Pair<A, B>>
-    return zip(this, lst)
 
 /**
  * Creates a duplicate-free version of an list in which only the first occurrence
@@ -789,7 +824,7 @@ public function chunk<T>(LinkedList<T> lst, int size) returns LinkedList<LinkedL
  */
 public function pull<T>(LinkedList<T> lst, T pull) returns LinkedList<T>
     let ret = lst.copy()
-    let iter = lst.iterator()
+    let iter = ret.iterator()
     for elem from iter
         if elem == pull
             iter.remove()

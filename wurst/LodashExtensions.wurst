@@ -1,7 +1,6 @@
 package LodashExtensions
 import LinkedList
 import HashMap
-import HashSet
 import Lodash
 
 /**
@@ -14,7 +13,13 @@ public function LinkedList<T>.equals<T>(LinkedList<T> b) returns bool
  * Checks for equality of two maps
  */
 public function IterableMap<K, V>.equals<K, V>(IterableMap<K, V> b) returns bool
-    return equals(this, b)
+    return mapEquals(this, b)
+
+/**
+* Checks for equality of two pairs
+*/
+public function Pair<A, B>.equals<A, B>(Pair<A, B> b) returns bool
+    return pairEquals(this, b)
 
 /**
  * Creates a slice of list with elements taken from the beginning. Elements are taken until predicate returns falsey.
@@ -48,7 +53,7 @@ public function LinkedList<T>.take<T>(int numElems) returns LinkedList<T>
  * where each successive invocation is supplied the return value of the previous. The order if iteration is from left
  * to right. The transform is invoked with two arguments: (accumulator, value)
  */
-public function LinkedList<T>.foldl<Q, T>(Q startValue, BiFunction<T, Q, Q> transform) returns Q
+public function LinkedList<T>.foldl<Q, T>(Q startValue, BiFunction<Q, T, Q> transform) returns Q
     return foldl(startValue, transform, this)
 
 /**
@@ -56,7 +61,7 @@ public function LinkedList<T>.foldl<Q, T>(Q startValue, BiFunction<T, Q, Q> tran
  * where each successive invocation is supplied the return value of the previous. The order if iteration is from right
  * to left. The transform is invoked with two arguments: (accumulator, value)
  */
-public function LinkedList<T>.foldr<Q, T>(Q startValue, BiFunction<T, Q, Q> transform) returns Q
+public function LinkedList<T>.foldr<Q, T>(Q startValue, BiFunction<Q, T, Q> transform) returns Q
     return foldr(startValue, transform, this)
 
 /**
@@ -98,7 +103,7 @@ public function LinkedList<T>.map<T, Q>(BiFunction<T, int, Q> transform) returns
 * transform is invoked with two arguments: (key, value)
  */
 public function IterableMap<S, T>.map<S, T, R>(BiFunction<S, T, R> transform) returns LinkedList<R>
-    return map(this, transform)
+    return mapMap(transform, this)
 
 /**
  * Flattens list a level less deep.
@@ -118,7 +123,7 @@ public function LinkedList<T>.drop<T>(int numElems) returns LinkedList<T>
  *
  * Alias of `filter`
  */
-public function LinkedList<T>.reject<T>(Predicate<T> filter) returns LinkedList<T>
+public function LinkedList<T>.lodashFilter<T>(Predicate<T> filter) returns LinkedList<T>
     return filter(filter, this)
 
 /**
@@ -158,6 +163,13 @@ public function LinkedList<T>.each<T>(VoidBiFunction<T, int> func)
  */
 public function LinkedList<A>.zipObject<A, B>(LinkedList<B> lst) returns IterableMap<A, B>
     return zipObject(this, lst)
+
+/**
+ * Creates a list of grouped elements, the first of which contains the first elements of the
+ * given lists, the second of which contains the second elements of the given lists.
+ */
+public function LinkedList<A>.zip<A, B>(LinkedList<B> lst) returns LinkedList<Pair<A, B>>
+    return zip(this, lst)
 
 /**
  * Creates a duplicate-free version of a list in which only the first occurrence

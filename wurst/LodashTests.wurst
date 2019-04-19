@@ -5,81 +5,485 @@ import Lodash
 import LodashExtensions
 
 @Test
-function testIntersection()
-    let lstA = asOwnedList(1, 2, 3)
-    let lstB = asOwnedList(2, 3, 4)
-    intersection(lstA, lstB).equals(asList(2, 3)).assertTrue()
+function range()
+    let a = range(10)
+    a.hasNext().assertTrue()
+    a.next().assertEquals(0)
+    a.next().assertEquals(1)
+    a.next().assertEquals(2)
+    a.next().assertEquals(3)
+    a.next().assertEquals(4)
+    a.next().assertEquals(5)
+    a.next().assertEquals(6)
+    a.next().assertEquals(7)
+    a.next().assertEquals(8)
+    a.next().assertEquals(9)
+    a.hasNext().assertFalse()
+
+    let b = range(5, 10)
+    b.hasNext().assertTrue()
+    b.next().assertEquals(5)
+    b.next().assertEquals(6)
+    b.next().assertEquals(7)
+    b.next().assertEquals(8)
+    b.next().assertEquals(9)
+    b.hasNext().assertFalse()
+
+    let c = range(5, 10, 2)
+    c.hasNext().assertTrue()
+    c.next().assertEquals(5)
+    c.next().assertEquals(7)
+    c.next().assertEquals(9)
+    c.hasNext().assertFalse()
+
 
 @Test
-function testRange()
-    let range = range(10)
+function rangeStep()
+    let range = rangeStep(10, 2)
     range.hasNext().assertTrue()
     range.next().assertEquals(0)
-    range.next().assertEquals(1)
     range.next().assertEquals(2)
-    range.next().assertEquals(3)
     range.next().assertEquals(4)
-    range.next().assertEquals(5)
     range.next().assertEquals(6)
-    range.next().assertEquals(7)
     range.next().assertEquals(8)
-    range.next().assertEquals(9)
     range.hasNext().assertFalse()
 
 @Test
-public function testFlatten()
-    let lists = asList(
-        asList(
-            asList(1, 2, 3, 4, 5),
-            asList(6, 7, 8, 9, 10)
-        ),
-        asList(
-            asList(1, 2, 3, 4, 5),
-            asList(6, 7, 8, 9, 10)
-        )
-    )
+function pair()
+    let a = pair(1, 2)
+    a.a.assertEquals(1)
+    a.b.assertEquals(2)
 
 @Test
-function testTake()
-    let list = new OwnedLinkedList<int>()
-    list.size().assertEquals(0)
+function maybeFree()
+    // LinkedList<T>.maybeFree<T>()
+    // IterableMap<K, V>.maybeFree<K, V>()
 
-    list..add(1, 2, 3, 4)
-    list.size().assertEquals(4)
+    asOwnedList(1, 2, 3).maybeFree().assertFalse()
+    asList(1, 2, 3).maybeFree().assertTrue()
+    new OwnedIterableMap<int, int>().maybeFree().assertFalse()
+    new IterableMap<int, int>().maybeFree().assertTrue()
+    ownList(asList(1, 2, 3)).maybeFree().assertFalse()
+    ownMap(new IterableMap<int, int>()).maybeFree().assertFalse()
 
-    list.take(2).size().assertEquals(2)
-    list.take(5).size().assertEquals(list.size())
-    list.take(0).size().assertEquals(0)
-
-    let list2 = list.take(3)
-    list2.get(0).assertEquals(1)
-    list2.get(1).assertEquals(2)
-    list2.get(2).assertEquals(3)
-
+function isOwnedLinkedList(LinkedList<int> x) returns boolean
+    return x instanceof OwnedLinkedList<int>
 
 @Test
-function testLinkedListEvery()
-    asList(1, 2, 3).every(x -> x < 4).assertTrue()
-    asList(1, 2, 3).every(x -> x < 3).assertFalse()
+function asOwnedList()
+    // asOwnedList<T>(vararg T ts) returns OwnedLinkedList<T>
+
+    let a = asOwnedList(1, 2, 3)
+    let b = asList(1, 2, 3)
+
+    isOwnedLinkedList(a).assertTrue()
+    isOwnedLinkedList(b).assertFalse()
 
 @Test
-function testLinkedListAny()
-    asList(1, 2, 3).any(x -> x < 4).assertTrue()
-    asList(1, 2, 3).any(x -> x > 3).assertFalse()
+function equals()
+    // equals<T>(LinkedList<T> a, LinkedList<T> b) returns bool
+    // equals<K, V>(IterableMap<K, V> a, IterableMap<K, V> b) returns bool
+
+    equals(
+        asList(0, 1, 0, 3, 4, 5, 6),
+        asList(0, 1, 0, 3, 4, 5, 6)
+    ).assertTrue()
+
+    equals(
+        asList(0, 1, 0, 3, 4, 5, 6),
+        asList(0, 1, 0, 0, 4, 5, 6)
+    ).assertFalse()
+
+    equals(
+        asList(0, 1, 0, 3, 4, 5, 6),
+        asList(0, 1, 0, 3, 4, 5)
+    ).assertFalse()
+
+    equals(
+        asList(0, 1, 0, 3, 4, 5),
+        asList(0, 1, 0, 3, 4, 5, 6)
+    ).assertFalse()
+
+    equals(
+        asList(0, 1, 0, 3, 4, 5),
+        null
+    ).assertFalse()
+
+    equals(
+        null,
+        asList(0, 1, 0, 3, 4, 5)
+    ).assertFalse()
+
+    LinkedList<int> foo = null
+
+    equals(foo, null).assertTrue()
 
 @Test
-function testTakeWhile()
-    let list = new OwnedLinkedList<int>()
-    list.size().assertEquals(0)
+function takeWhile()
+    // takeWhile<T>(TriFunction<T, int, LinkedList<T>, bool> predicate, LinkedList<T> list) returns LinkedList<T>
+    // takeWhile<T>(BiFunction<T, int, bool> predicate, LinkedList<T> list) returns LinkedList<T>
+    // takeWhile<T>(Predicate<T> predicate, LinkedList<T> list) returns LinkedList<T>
 
-    list..add(1, 2, 3, 4)
-    list.size().assertEquals(4)
+    equals(
+        asList(0, 1, 0, 3, 4, 5, 6).takeWhile(x -> x < 5),
+        asList(0, 1, 0, 3, 4)
+    ).assertTrue()
 
-    list.takeWhile(x -> x < 3).size().assertEquals(2)
-    list.takeWhile((x, y) -> y < 3).size().assertEquals(3)
-    list.takeWhile((x, y, z) -> z.get(y) == x).size().assertEquals(4)
 
-    let list2 = list.takeWhile((x, y) -> y < 3)
-    list2.get(0).assertEquals(1)
-    list2.get(1).assertEquals(2)
-    list2.get(2).assertEquals(3)
+    equals(
+        asList(0, 1, 0, 3, 4, 5, 6).takeWhile((x, idx, list) -> x < 3 and idx < 2),
+        asList(0, 1)
+    ).assertTrue()
+
+@Test
+function take()
+    // take<T>(int numElems, LinkedList<T> list) returns LinkedList<T>
+
+    equals(
+        asList(0, 1, 0, 3, 4, 5, 6).take(3),
+        asList(0, 1, 0)
+    ).assertTrue()
+
+@Test
+function foldl()
+    // foldl<Q, T>(Q startValue, BiFunction<T, Q, Q> transform, LinkedList<T> list) returns Q
+
+    foldl(1, (curr, memo) -> memo * curr, asList(1, 2, 3, 4, 5)).assertEquals(120)
+    foldl("", (curr, memo) -> curr + memo, asList("1", "2", "3")).assertEquals("123")
+    foldl("", (curr, memo) -> curr + memo.toString(), asList(1, 2, 3)).assertEquals("123")
+
+@Test
+function foldr()
+    // foldr<Q, T>(Q startValue, BiFunction<T, Q, Q> transform, LinkedList<T> list) returns Q
+
+    asList(1, 2, 3, 4, 5).foldr(1, (curr, memo) -> memo * curr).assertEquals(120)
+    asList("1", "2", "3").foldr("", (curr, memo) -> curr + memo).assertEquals("321")
+    asList(1, 2, 3).foldr("", (curr, memo) -> curr + memo.toString()).assertEquals("321")
+
+@Test
+function every()
+    // every<T>(Predicate<T> predicate, LinkedList<T> list) returns bool
+
+    asList(1, 2, 3, 4, 5).every(x -> x > 0).assertTrue()
+    asList(1, 2, 3, 4, 5).every(x -> x > 3).assertFalse()
+
+@Test
+function any()
+    // any<T>(Predicate<T> predicate, LinkedList<T> list) returns bool
+
+    asList(1, 2, 3, 4, 5).any(x -> x > 3).assertTrue()
+    asList(1, 2, 3, 4, 5).any(x -> x > 5).assertFalse()
+
+@Test
+function keys()
+    // keys<T, Q>(IterableMap<T, Q> map) returns LinkedList<T>
+
+    let map = new IterableMap<int, string>()
+    ..put(0, "0")
+    ..put(1, "1")
+    ..put(2, "2")
+
+    equals(
+        map.keys(),
+        asList(0, 1, 2)
+    ).assertTrue()
+
+@Test
+function values()
+    // values<T, Q>(IterableMap<T, Q> map) returns LinkedList<Q>
+
+    let map = new IterableMap<int, string>()
+    ..put(0, "0")
+    ..put(1, "1")
+    ..put(2, "2")
+
+    equals(
+        map.values(),
+        asList("0", "1", "2")
+    ).assertTrue()
+
+@Test
+function map()
+    // map<T, Q>(Function<T, Q> transform, LinkedList<T> list) returns LinkedList<Q>
+    // map<T, Q>(BiFunction<T, int, Q> transform, LinkedList<T> list) returns LinkedList<Q>
+    // map<S, T, R>(IterableMap<S, T> map, BiFunction<S, T, R> transform) returns LinkedList<R>
+
+    equals(
+        asList(0, 1, 2, 3, 4, 5, 6).map((elem, idx) -> elem + idx),
+        asList(0, 2, 4, 6, 8, 10, 12)
+    ).assertTrue()
+
+    let map = new IterableMap<int, string>()
+    ..put(0, "0")
+    ..put(1, "1")
+    ..put(2, "2")
+
+    equals(
+        map.map((key, value) -> key.toString() + value),
+        asList("00", "11", "22")
+    ).assertTrue()
+
+@Test
+function flatten()
+    // flatten<T>(LinkedList<LinkedList<T>> list) returns LinkedList<T>
+
+    equals(
+        asList(asList(0, 1, 2), asList(3), asList(4, 5, 6)).flatten(),
+        asList(0, 1, 2, 3, 4, 5, 6)
+    ).assertTrue()
+
+@Test
+function drop()
+    // drop<T>(int numElems, LinkedList<T> list) returns LinkedList<T>
+
+    equals(
+        asList(0, 1, 2, 3, 4, 5, 6).drop(3),
+        asList(3, 4, 5, 6)
+    ).assertTrue()
+
+@Test
+function filter()
+    // filter<T>(Predicate<T> filter, LinkedList<T> list) returns LinkedList<T>
+
+    equals(
+        asList(1, 2, 3, 4, 5).lodashFilter(x -> x mod 2 == 1),
+        asList(1, 3, 5)
+    ).assertTrue()
+
+@Test
+function sum()
+    // sum(LinkedList<int> list) returns int
+    // sum(LinkedList<real> list) returns real
+
+    asList(1, 2, 3).sum().assertEquals(6)
+    asList(1.1, 2.2, 3.3).sum().assertEquals(6.6)
+
+@Test
+function length()
+    // length<T>(LinkedList<T> list) returns int
+
+    asList(1, 2, 3).length().assertEquals(3)
+
+@Test
+function each()
+    // each<T>(VoidFunction<T> func, LinkedList<T> list)
+    // each<T>(VoidBiFunction<T, int> func, LinkedList<T> list)
+
+    asList(0, 1, 2, 3, 4, 5).each((elem, idx) -> elem.assertEquals(idx))
+
+@Test
+function zipObject()
+    // zipObject<A, B>(LinkedList<A> a, LinkedList<B> b) returns IterableMap<A, B>
+
+    let expected = new IterableMap<int, int>()
+    ..put(1, 2)
+    ..put(2, 3)
+    ..put(3, 4)
+
+    mapEquals(
+        asList(1, 2, 3).zipObject(asList(2, 3, 4)),
+        expected
+    ).assertTrue()
+
+@Test
+function zip()
+    // zip<A, B>(LinkedList<A> a, LinkedList<B> b) returns LinkedList<Pair<A, B>>
+
+    pairListEquals(
+        asList(1, 2, 3).zip(asList(2, 3, 4)),
+        asList(pair(1, 2), pair(2, 3), pair(3, 4))
+    ).assertTrue()
+
+@Test
+function uniq()
+    // uniq<T>(LinkedList<T> lst) returns LinkedList<T>
+
+    equals(
+        asList(1, 2, 3, 1, 2, 3, 1, 2, 3, 1).uniq(),
+        asList(1, 2, 3)
+    ).assertTrue()
+
+@Test
+function uniqBy()
+    // uniqBy<T, R>(LinkedList<T> lst, Function<T, R> func) returns LinkedList<T>
+
+    equals(
+        asList(1.0, 1.1, 1.2, 2.0, 2.1, 2.2).uniqBy(x -> x.floor()),
+        asList(1.0, 2.0)
+    ).assertTrue()
+
+@Test
+function union()
+    // union<T>(LinkedList<T> a, LinkedList<T> b) returns LinkedList<T>
+
+    equals(
+        asList(1, 2, 3, 4, 5, 6).union(asList(1, 3, 5, 7)),
+        asList(1, 2, 3, 4, 5, 6, 7)
+    ).assertTrue()
+
+    equals(
+        asList(1, 2, 3, 4, 5, 6).union(asList(7, 1, 3, 5)),
+        asList(1, 2, 3, 4, 5, 6, 7)
+    ).assertTrue()
+
+@Test
+function intersection()
+    // intersection<T>(LinkedList<T> a, LinkedList<T> b) returns LinkedList<T>
+
+    equals(
+        asList(1, 2, 3, 4, 5, 6).intersection(asList(1, 3, 5, 7)),
+        asList(1, 3, 5)
+    ).assertTrue()
+
+@Test
+function difference()
+    // difference<T>(LinkedList<T> a, LinkedList<T> b) returns LinkedList<T>
+
+    equals(
+        asList(1, 2, 3, 4, 5, 6).difference(asList(1, 3, 5, 7)),
+        asList(2, 4, 6)
+    ).assertTrue()
+
+@Test
+function indexBy()
+    // indexBy<T, R>(LinkedList<T> lst, Function<T, R> idx) returns IterableMap<R, T>
+
+    let expected = new IterableMap<int, Pair<int, int>>()
+    ..put(1, pair(1, 2))
+    ..put(3, pair(3, 4))
+    ..put(5, pair(5, 6))
+
+    let result = asList(pair(1, 2), pair(3, 4), pair(5, 6)).indexBy(x -> x.a)
+
+    pairEquals(result.get(1), expected.get(1)).assertTrue()
+    pairEquals(result.get(3), expected.get(3)).assertTrue()
+    pairEquals(result.get(5), expected.get(5)).assertTrue()
+
+    result.size().assertEquals(3)
+
+@Test
+function groupBy()
+    // groupBy<T, R>(LinkedList<T> lst, Function<T, R> idx) returns IterableMap<R, LinkedList<T>>
+
+    let expected = new IterableMap<int, LinkedList<int>>()
+    ..put(0, asList(0, 2, 4, 6, 8))
+    ..put(1, asList(1, 3, 5, 7, 9))
+
+    let result = asList(0, 1, 2, 3, 4, 5, 6, 7, 8, 9).groupBy(x -> x mod 2)
+
+    equals(result.get(0), expected.get(0)).assertTrue()
+    equals(result.get(1), expected.get(1)).assertTrue()
+
+    result.size().assertEquals(2)
+
+@Test
+function mapValues()
+    // mapValues<S, T, R>(IterableMap<S, T> map, BiFunction<S, T, R> transform) returns IterableMap<S, R>
+
+    let a = new OwnedIterableMap<int, string>()
+    ..put(1, "1")
+    ..put(2, "2")
+    ..put(3, "3")
+
+    let b = new IterableMap<int, string>()
+    ..put(1, "11")
+    ..put(2, "22")
+    ..put(3, "33")
+
+    mapEquals(a, b).assertFalse()
+    mapEquals(
+        a.mapValues((key, value) -> value + value),
+        b
+    ).assertTrue()
+
+@Test
+function mapKeys()
+    // mapKeys<S, T, R>(IterableMap<S, T> map, BiFunction<S, T, R> transform) returns IterableMap<R, T>
+
+    let a = new OwnedIterableMap<int, string>()
+    ..put(1, "1")
+    ..put(2, "2")
+    ..put(3, "3")
+
+    let b = new IterableMap<int, string>()
+    ..put(1, "1")
+    ..put(4, "2")
+    ..put(9, "3")
+
+    mapEquals(a, b).assertFalse()
+    mapEquals(
+        a.mapKeys((key, value) -> key * key),
+        b
+    ).assertTrue()
+
+@Test
+function toPairs()
+    // toPairs<S, T>(IterableMap<S, T> map) returns LinkedList<Pair<S, T>>
+
+    let map = new IterableMap<int, string>()
+    ..put(1, "1")
+    ..put(2, "2")
+    ..put(3, "3")
+
+    let pairs = map.toPairs()
+
+    pairs.get(0).a.assertEquals(1)
+    pairs.get(0).b.assertEquals("1")
+    pairs.get(1).a.assertEquals(2)
+    pairs.get(1).b.assertEquals("2")
+    pairs.get(2).a.assertEquals(3)
+    pairs.get(2).b.assertEquals("3")
+
+@Test
+function fromPairs()
+    // fromPairs<S, T>(LinkedList<Pair<S, T>> lst) returns IterableMap<S, T>
+
+    let map = new IterableMap<int, string>()
+    ..put(1, "1")
+    ..put(2, "2")
+    ..put(3, "3")
+
+    mapEquals(
+        asList(pair(1, "1"), pair(2, "2"), pair(3, "3")).fromPairs(),
+        map
+    ).assertTrue()
+
+    mapEquals(
+        asList(pair(1, "1"), pair(2, "2"), pair(3, "3"), pair(4, "4")).fromPairs(),
+        map
+    ).assertFalse()
+
+    mapEquals(
+        asList(pair(1, "1"), pair(2, "2")).fromPairs(),
+        map
+    ).assertFalse()
+
+@Test
+function chunk()
+    // chunk<T>(LinkedList<T> lst, int size) returns LinkedList<LinkedList<T>>
+
+    equals(
+        asList(1, 2, 3, 4, 5, 6, 7, 8, 9).chunk(3),
+        asList(asList(1, 2, 3), asList(4, 5, 6), asList(7, 8, 9)),
+        (a, b) -> equals(a, b)
+    ).assertTrue()
+
+    equals(
+        asList(1, 2, 3, 4, 5, 6, 7, 8).chunk(5),
+        asList(asList(1, 2, 3, 4, 5), asList(6, 7, 8)),
+        (a, b) -> equals(a, b)
+    ).assertTrue()
+
+@Test
+function pull()
+    // pull<T>(LinkedList<T> lst, T pull) returns LinkedList<T>
+
+    equals(
+        asList(1, 2, 3, 4, 5).pull(3),
+        asList(1, 2, 4, 5)
+    ).assertTrue()
+
+    equals(
+        asList(1, 2, 3, 1, 2, 3).pull(3),
+        asList(1, 2, 1, 2)
+    ).assertTrue()
