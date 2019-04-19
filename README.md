@@ -1,6 +1,6 @@
 # Wurst FP
 
-Functional Programming Utilities for WurstScript
+Functional Programming Utilities for [WurstScript](https://wurstlang.org/)
 
 [![CircleCI](https://circleci.com/gh/theQuazz/wurst-fp.svg?style=svg)](https://circleci.com/gh/theQuazz/wurst-fp)
 
