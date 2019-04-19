@@ -1,4 +1,4 @@
 ---
 projectName: Wurst Functional Programming Utilities
 dependencies:
-  - https://github.com/wurstscript/wurstStdlib2
+- https://github.com/wurstscript/WurstStdlib2

@@ -272,7 +272,7 @@ public function equals<K, V>(IterableMap<K, V> a, IterableMap<K, V> b) returns b
     for key from iter
         if a.get(key) != b.get(key)
             return false
-    iterator.close()
+    iter.close()
     return true
 
 /**
@@ -506,7 +506,7 @@ public function sum(LinkedList<int> list) returns int
  * Computes the sum of the values in list.
  */
 public function sum(LinkedList<real> list) returns real
-    return foldl(0, (elem, value) -> value + elem, list)
+    return foldl(0.0, (elem, value) -> value + elem, list)
 
 /**
  * Gets the length of list and maybe frees it
