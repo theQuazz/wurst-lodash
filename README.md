@@ -284,12 +284,3 @@ LinkedList<T>.pull<T>(T pull) returns LinkedList<T>
 ```
 
 Removes all given values from list.
-
-## Documentation
-
-This documentation was generated from the code via the following regex
-
-```
-/\*\*((\n \* (.*))*)\n.*\npublic function (.*\.([^\<\(]*).*)\n.*
-### `$5`\n\n```\n$4\n```\n\n$1
-```
