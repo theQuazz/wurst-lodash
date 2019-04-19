@@ -1,0 +1,113 @@
+package WurstFPTests
+import WurstFP
+import WurstFPExtensions
+
+@Test
+function testIntersection()
+    let lstA = asOwnedList(1, 2, 3)
+    let lstB = asOwnedList(2, 3, 4)
+    intersection(lstA, lstB).equals(asList(2, 3)).assertTrue()
+
+@Test
+function testRange()
+    let range = range(10)
+    range.hasNext().assertTrue()
+    range.next().assertEquals(0)
+    range.next().assertEquals(1)
+    range.next().assertEquals(2)
+    range.next().assertEquals(3)
+    range.next().assertEquals(4)
+    range.next().assertEquals(5)
+    range.next().assertEquals(6)
+    range.next().assertEquals(7)
+    range.next().assertEquals(8)
+    range.next().assertEquals(9)
+    range.hasNext().assertFalse()
+
+@Test
+public function testMapValues()
+    let maps = asOwnedList(
+        new IterableMap<int, int>()..put(1, 2),
+        new IterableMap<int, int>()..put(3, 4),
+        new IterableMap<int, int>()..put(5, 6)
+    )
+
+    let valuesOf = Function.owned<IterableMap<int, int>, LinkedList<int>>(elem -> values(elem))
+    let mapValues = map(valuesOf)
+    let values = flatten(mapValues.call(maps))
+
+    values.size().assertEquals(3)
+    values.get(0).assertEquals(2)
+    values.get(1).assertEquals(4)
+    values.get(2).assertEquals(6)
+
+    destroy mapValues
+
+@Test
+public function testFlatten()
+    let lists = asList(
+        asList(
+            asList(1, 2, 3, 4, 5),
+            asList(6, 7, 8, 9, 10)
+        ),
+        asList(
+            asList(1, 2, 3, 4, 5),
+            asList(6, 7, 8, 9, 10)
+        )
+    )
+
+    let mapFlatten = map(Function.owned(flatten<int>()))
+    let result = mapFlatten.call(lists)
+    result.size().assertEquals(2)
+    result.get(0).size().assertEquals(10)
+
+@Test
+function testTake2()
+    let ints = asList(1, 2, 3)
+    let take2 = take<int>(2)
+    take2.call(ints).size().assertEquals(2)
+
+@Test
+function testTake()
+    let list = new OwnedLinkedList<int>()
+    list.size().assertEquals(0)
+
+    list..add(1, 2, 3, 4)
+    list.size().assertEquals(4)
+
+    list.take(2).size().assertEquals(2)
+    list.take(5).size().assertEquals(list.size())
+    list.take(0).size().assertEquals(0)
+
+    let list2 = list.take(3)
+    list2.get(0).assertEquals(1)
+    list2.get(1).assertEquals(2)
+    list2.get(2).assertEquals(3)
+
+
+@Test
+function testLinkedListEvery()
+    asList(1, 2, 3).every(x -> x < 4).assertTrue()
+    asList(1, 2, 3).every(x -> x < 3).assertFalse()
+
+@Test
+function testLinkedListAny()
+    asList(1, 2, 3).any(x -> x < 4).assertTrue()
+    asList(1, 2, 3).any(x -> x > 3).assertFalse()
+
+@Test
+function testTakeWhile()
+    let list = new OwnedLinkedList<int>()
+    list.size().assertEquals(0)
+
+    list..add(1, 2, 3, 4)
+    list.size().assertEquals(4)
+
+    list.takeWhile(x -> x < 3).size().assertEquals(2)
+    list.takeWhile((x, y) -> y < 3).size().assertEquals(3)
+    list.takeWhile((x, y, z) -> z.get(y) == x).size().assertEquals(4)
+
+    let list2 = list.takeWhile((x, y) -> y < 3)
+    list2.get(0).assertEquals(1)
+    list2.get(1).assertEquals(2)
+    list2.get(2).assertEquals(3)

@@ -1,0 +1,249 @@
+package WurstFPExtensions
+import LinkedList
+import HashMap
+import HashSet
+import WurstFP
+
+/**
+ * Checks for equality of two lists
+ */
+public function LinkedList<T>.equals<T>(LinkedList<T> b) returns bool
+    return equals(this, b)
+
+/**
+ * Checks for equality of two maps
+ */
+public function IterableMap<K, V>.equals<K, V>(IterableMap<K, V> b) returns bool
+    return equals(this, b)
+
+/**
+ * Creates a slice of list with elements taken from the beginning. Elements are taken until predicate returns falsey.
+ * The predicate is invoked with three arguments: (value, index, list).
+ */
+public function LinkedList<T>.takeWhile<T>(TriFunction<T, int, LinkedList<T>, bool> predicate) returns LinkedList<T>
+    return takeWhile(predicate, this)
+
+/**
+ * Creates a slice of list with elements taken from the beginning. Elements are taken until predicate returns falsey.
+ * The predicate is invoked with two arguments: (value, index).
+ */
+public function LinkedList<T>.takeWhile<T>(BiFunction<T, int, bool> predicate) returns LinkedList<T>
+    return this.takeWhile((x, y, _z) -> predicate.call(x, y))
+
+/**
+ * Creates a slice of list with elements taken from the beginning. Elements are taken until predicate returns falsey.
+ * The predicate is invoked with one argument: (value).
+ */
+public function LinkedList<T>.takeWhile<T>(Predicate<T> predicate) returns LinkedList<T>
+    return this.takeWhile((x, _y, _z) -> predicate.call(x))
+
+/**
+ * Creates a slice of list with numElems elements taken from the beginning.
+ */
+public function LinkedList<T>.take<T>(int numElems) returns LinkedList<T>
+    return take(numElems, this)
+
+/**
+ * Reduces collection to a value which is the accumulated result of running each element in collection thru iteratee,
+ * where each successive invocation is supplied the return value of the previous. The order if iteration is from left
+ * to right. The transform is invoked with two arguments: (accumulator, value)
+ */
+public function LinkedList<T>.foldl<Q, T>(Q startValue, BiFunction<T, Q, Q> transform) returns Q
+    return foldl(startValue, transform, this)
+
+/**
+ * Reduces collection to a value which is the accumulated result of running each element in collection thru iteratee,
+ * where each successive invocation is supplied the return value of the previous. The order if iteration is from right
+ * to left. The transform is invoked with two arguments: (accumulator, value)
+ */
+public function LinkedList<T>.foldr<Q, T>(Q startValue, BiFunction<T, Q, Q> transform) returns Q
+    return foldr(startValue, transform, this)
+
+/**
+ * Checks if predicate returns truthy for all elements of collection. Iteration is stopped once predicate returns falsey.
+ * The predicate is invoked with one argument: (value).
+ */
+public function LinkedList<T>.every<T>(Predicate<T> predicate) returns bool
+    return every(predicate, this)
+
+
+/**
+ * Checks if predicate returns truthy for any element of collection. Iteration is stopped once predicate returns truthy.
+ * The predicate is invoked with one argument: (value).
+ */
+public function LinkedList<T>.any<T>(Predicate<T> predicate) returns bool
+    return any(predicate, this)
+
+/**
+ * Creates a list of the keys of map
+ */
+public function IterableMap<T, Q>.keys<T, Q>() returns LinkedList<T>
+    return keys(this)
+
+/**
+ * Creates a list of the values of map
+ */
+public function IterableMap<T, Q>.values<T, Q>() returns LinkedList<Q>
+    return values(this)
+
+/**
+ * Creates a list of values by running each element in collection thru transform. The
+ * transform is invoked with two arguments: (value, index)
+ */
+public function LinkedList<T>.map<T, Q>(BiFunction<T, int, Q> transform) returns LinkedList<Q>
+    return map(transform, this)
+
+/**
+* Creates a list of values by running each element in map thru transform. The
+* transform is invoked with two arguments: (key, value)
+ */
+public function IterableMap<S, T>.map<S, T, R>(BiFunction<S, T, R> transform) returns LinkedList<R>
+    return map(this, transform)
+
+/**
+ * Flattens list a level less deep.
+ */
+public function LinkedList<LinkedList<T>>.flatten<T>() returns LinkedList<T>
+    return flatten(list)
+
+/**
+ * Creates a slice of list with numELems elements dropped from the beginning.
+ */
+public function LinkedList<T>.drop<T>(int numElems) returns LinkedList<T>
+    return drop(numElems, this)
+
+/**
+ * Iterates over elements of list, returning a list of all elements predicate returns truthy for.
+ * The predicate is invoked with one argument: (value).
+ *
+ * Alias of `filter`
+ */
+public function LinkedList<T>.reject<T>(Predicate<T> filter) returns LinkedList<T>
+    return filter(filter, this)
+
+/**
+ * Computes the sum of the values in list.
+ */
+public function LinkedList<int>.sum() returns int
+    return sum(this)
+
+/**
+ * Computes the sum of the values in list.
+ */
+public function LinkedList<real>.sum() returns real
+    return sum(this)
+
+/**
+ * Gets the length of list and maybe frees it
+ */
+public function LinkedList<T>.length<T>() returns int
+    return length(this)
+
+/**
+ * Iterates over elements of collection and invokes iteratee for each element.
+ * The iteratee is invoked with one argument: (value).
+ */
+public function LinkedList<T>.each<T>(VoidFunction<T> func)
+    each(func, this)
+
+/**
+ * Iterates over elements of collection and invokes iteratee for each element.
+ * The iteratee is invoked with two arguments: (value, index).
+ */
+public function LinkedList<T>.each<T>(VoidBiFunction<T, int> func)
+    each(func, this)
+
+/**
+ * Creates an IterableMap with the keys from A and the values from B
+ */
+public function LinkedList<A>.zipObject<A, B>(LinkedList<B> lst) returns IterableMap<A, B>
+    return zipObject(this, lst)
+
+/**
+ * Creates a duplicate-free version of a list in which only the first occurrence
+ * of each element is kept. The order of result values is determined by the order
+ * they occur in the list.
+ */
+public function LinkedList<T>.uniq<T>() returns LinkedList<T>
+    return uniq(this)
+
+/**
+ * Creates a duplicate-free version of a list in which only the first occurrence
+ * of each element is kept as compared by func. The order of result values is
+ * determined by the order they occur in the list. The iteratee is invoked with
+ * one argument: (value)
+ */
+public function LinkedList<T>.uniqBy<T, R>(Function<T, R> func) returns LinkedList<T>
+    return uniqBy(this, func)
+
+/**
+* Creates a list of unique values, in order, from the given lists
+*/
+public function LinkedList<T>.union<T>(LinkedList<T> lst) returns LinkedList<T>
+    return union(this, lst)
+
+/**
+ * Creates an array of unique values that are included in both given lists.
+ */
+public function LinkedList<T>.intersection<T>(LinkedList<T> lst) returns LinkedList<T>
+    return intersection(this, lst)
+
+/**
+ * Creates an array of array values not included in the other given lists.
+ */
+public function LinkedList<T>.difference<T>(LinkedList<T> lst) returns LinkedList<T>
+    return difference(this, lst)
+
+/**
+ * Creates an iterable map composed of keys generated from the results of running each element of collection thru iteratee.
+ * The corresponding value of each key is the last element responsible for generating the key. The iteratee is invoked with
+ * one argument: (value).
+ */
+public function LinkedList<T>.indexBy<T, R>(Function<T, R> idx) returns IterableMap<R, T>
+    return indexBy(this, idx)
+
+/**
+ * Creates an iterable map composed of keys generated from the results of running each element of collection thru iteratee.
+ * The order of grouped values is determined by the order they occur in collection. The corresponding value of each key is
+ * a list of elements responsible for generating the key. The iteratee is invoked with one argument: (value).
+ */
+public function LinkedList<T>.groupBy<T, R>(Function<T, R> idx) returns IterableMap<R, LinkedList<T>>
+    return groupBy(this, idx)
+
+/**
+ * Creates an iterable map with the same keys as map and values generated by running each property of map thru iteratee.
+ * The iteratee is invoked with two arguments: (key, value)
+ */
+public function IterableMap<S, T>.mapValues<S, T, R>(BiFunction<S, T, R> transform) returns IterableMap<S, R>
+    return mapValues(this, transform)
+
+/**
+ * Creates an iterable map with the same values as map and keys generated by running each key of map thru iteratee.
+ * The iteratee is invoked with two arguments: (key, value)
+ */
+public function IterableMap<S, T>.mapKeys<S, T, R>(BiFunction<S, T, R> transform) returns IterableMap<R, T>
+    return mapKeys(this, transform)
+
+/**
+ * Converts an interable map to a list of pairs for each key, value pair.
+ */
+public function IterableMap<S, T>.toPairs<S, T>() returns LinkedList<Pair<S, T>>
+    return toPairs(this)
+
+/**
+ * Takes a list of key value pairs and transforms them into a iterable map.
+ */
+public function LinkedList<Pair<S, T>>.fromPairs<S, T>() returns IterableMap<S, T>
+    return fromPairs(this)
+
+/**
+ * Creates a list of elements split into groups the length of size. If list can't be split evenly, the final chunk will be the remaining elements.
+ */
+public function LinkedList<T>.chunk<T>(int size) returns LinkedList<LinkedList<T>>
+    return chunk(this, size)
+
+/**
+ * Removes all given values from list.
+ */
+public function LinkedList<T>.pull<T>(T pull) returns LinkedList<T>
+    return pull(this, pull)
