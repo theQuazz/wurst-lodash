@@ -4,18 +4,34 @@ import HashMap
 import HashSet
 
 /**
- * Make a map from a list of pairs
+ * Ownable object
+ *
+ * Can be "owned" to prevent being freed with the `.own()` method
+ * Methods in the Lodash library will attempt to free callables that they are passed
  */
-function makeMap<K, V>(vararg Pair<K, V> elems) returns IterableMap<K, V>
-    let map = new IterableMap<K, V>()
-    for elem in elems
-        map.put(elem.a, elem.b)
-    return map
+public abstract class Ownable
+    var owned = false
+
+    /**
+    * Own's this callable to prevent it from being freed automatically.
+    * You must manually `destroy` this object to free it
+    */
+    function own()
+        owned = true
+
+    /**
+    * Destroys this callable if it has not been owned
+    */
+    function maybeFree() returns bool
+        if not owned
+            destroy this
+            return true
+        return false
 
 /**
  * Represents a range of numbers
  */
-public class Range
+public class Range extends Ownable
     let incr = 1
     let start = 0
     let finish = INT_MAX
@@ -62,13 +78,19 @@ public class Range
         return new Range(curr, finish, incr)
 
     /**
+     * Reset this iterator
+     */
+    function reset()
+        curr = start
+
+    /**
      * Converts the range to a list
      */
     function toList() returns LinkedList<int>
         let lst = new LinkedList<int>()
         for x from this
             lst.add(x)
-        close()
+        maybeFree()
         return lst
 
 /**
@@ -104,7 +126,7 @@ public function rangeStep(int max, int incr) returns Range
 /**
  * A tuple which can be cast to index for use in data types
  */
-public class Pair<A, B>
+public class Pair<A, B> extends Ownable
     A a
     B b
 
@@ -114,6 +136,19 @@ public class Pair<A, B>
     construct(A a, B b)
         this.a = a
         this.b = b
+
+    /**
+     * Get the first element of the pair
+     */
+    function head() returns A
+        return a
+
+
+    /**
+     * Get the last element of the pair
+     */
+    function tail() returns B
+        return b
 
 /**
  * Creates a tuple which can be cast to index for use in data types
@@ -133,28 +168,8 @@ public class OwnedIterableMap<K, V> extends IterableMap<K, V>
 
 /**
  * The interface from which all lambdas will inherit
- *
- * Can be "owned" to prevent being freed with the `.own()` method
- * Methods in the Lodash library will attempt to free callables that they are passed
  */
-public abstract class Callable
-    var cleanup = true
-
-    /**
-     * Own's this callable to prevent it from being freed automatically.method
-     * You must manually `destroy` this object to free it
-     */
-    function own()
-        cleanup = false
-
-    /**
-     * Destroys this callable if it has not been owned
-     */
-    function maybeFree() returns bool
-        if cleanup
-            destroy this
-            return true
-        return false
+public abstract class Callable extends Ownable
 
 /**
  * () -> nothing
@@ -281,6 +296,16 @@ public function ownMap<K, V>(IterableMap<K, V> map) returns OwnedIterableMap<K, 
     ..addAll(map)
     destroy map
     return m
+
+/**
+ * Make a map from a list of pairs
+ */
+function makeMap<K, V>(vararg Pair<K, V> elems) returns IterableMap<K, V>
+    let map = new IterableMap<K, V>()
+    for elem in elems
+        map.put(elem.a, elem.b)
+        elem.maybeFree()
+    return map
 
 /**
  * Checks for equality of two lists
@@ -807,6 +832,7 @@ public function fromPairs<S, T>(LinkedList<Pair<S, T>> lst) returns IterableMap<
     let iter = lst.iterator()
     for elem from iter
         map.put(elem.a, elem.b)
+        elem.maybeFree()
     iter.close()
     lst.maybeFree()
     return map

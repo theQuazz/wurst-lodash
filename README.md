@@ -1,38 +1,66 @@
 # Lodash
 
-Functional Programming Utilities for [WurstScript](https://wurstlang.org/) inspired by [Lodash](https://lodash.com/docs/)
-
 [![CircleCI](https://circleci.com/gh/theQuazz/wurst-lodash.svg?style=svg)](https://circleci.com/gh/theQuazz/wurst-lodash)
 
-## Package `Lodash`
+Functional Programming Utilities for [WurstScript](https://wurstlang.org/) inspired by [Lodash](https://lodash.com/docs/)
+
+- [`package Lodash`](#package-lodash)
+    - [`ownList`](#ownList)
+    - [`ownMap`](#ownMap)
+    - [`owned`](#owned)
+    - [`range`](#range)
+    - [`rangeStep`](#rangeStep)
+    - [`pair`](#pair)
+    - [`makeMap`](#makeMap)
+    - [`class Ownable`](#class-ownable)
+        - [`own`](#own)
+        - [`maybeFree`](#maybeFree)
+    - [`class Range`](#class-range)
+        - [`reset`](#reset)
+        - [`toList`](#toList)
+    - [`class Pair`](#class-pair)
+        - [`head`](#head)
+        - [`tail`](#tail)
+- [`package LodashExtensions`](#package-lodashextensions)
+    - [`any`](#any)
+    - [`chunk`](#chunk)
+    - [`difference`](#difference)
+    - [`drop`](#drop)
+    - [`each`](#each)
+    - [`equals`](#equals)
+    - [`every`](#every)
+    - [`filter`](#filter)
+    - [`flatten`](#flatten)
+    - [`foldl`](#foldl)
+    - [`foldr`](#foldr)
+    - [`fromPairs`](#fromPairs)
+    - [`groupBy`](#groupBy)
+    - [`indexBy`](#indexBy)
+    - [`intersection`](#intersection)
+    - [`keys`](#keys)
+    - [`length`](#length)
+    - [`map`](#map)
+    - [`mapKeys`](#mapKeys)
+    - [`mapValues`](#mapValues)
+    - [`pull`](#pull)
+    - [`sum`](#sum)
+    - [`take`](#take)
+    - [`takeWhile`](#takeWhile)
+    - [`toPairs`](#toPairs)
+    - [`union`](#union)
+    - [`uniq`](#uniq)
+    - [`uniqBy`](#uniqBy)
+    - [`values`](#values)
+    - [`zipObject`](#zipObject)
+
+## `package Lodash`
 
 This library provides utility functions for operating on `LinkedList`
 and `IterableMap` objects as well as utility classes `Range` and `Pair`.
 These functions will attempt to destroy the lists and maps
 that they act upon unless they are explicitly owned.
 
-### `makeMap`
-
-```typescript
-function makeMap<K, V>(vararg Pair<K, V> elems) returns IterableMap<K, V>
-```
-
-Make a map from a list of pairs. Example:
-
-```typescript
-makeMap(
-    pair(1, "a"),
-    pair(2, "b"),
-    pair(3, "c"),
-)
-// => {
-//   1 => "a",
-//   2 => "b",
-//   3 => "c"
-// }
-```
-
-### `ownList`
+#### `ownList`
 
 ```typescript
 function ownList<T>(LinkedList<T> list) returns OwnedLinkedList<T>
@@ -45,7 +73,7 @@ let list = asList(1, 2, 3)
 let myOwnedList = ownList(list)
 ```
 
-### `ownMap`
+#### `ownMap`
 
 ```typescript
 function ownMap<K, V>(IterableMap<K, V> map) returns OwnedIterableMap<K, V>
@@ -58,20 +86,7 @@ let map = asList(pair(1, 2), pair(2, 3)).fromPairs()
 let myOwnedMap = ownMap(map)
 ```
 
-### `own`
-
-```typescript
-function Callable.own()
-```
-
-Own a callable. Example:
-
-```typescript
-Predicate<int> isEven = x -> x mod 2 == 0
-isEven.own()
-```
-
-### `owned`
+#### `owned`
 
 ```typescript
 static function Callable.owned(Callable func) returns Callable
@@ -83,15 +98,7 @@ Create an owned callable. Example:
 let myOwnedFunc = Function<int, string>.owned(x -> x.toString())
 ```
 
-### `Range`
-
-```typescript
-class Range
-```
-
-Represents a range of numbers. Can be iterated. Default `min` is `0`, default max is `INT_MAX`, default `incr` is `1`.
-
-### `range`
+#### `range`
 
 ```typescript
 function range(int min, int max, int incr) returns Range
@@ -117,7 +124,7 @@ for i from range(4, 10, 2)
 x // => [4, 6, 8]
 ```
 
-### `rangeStep`
+#### `rangeStep`
 
 ```typescript
 function rangeStep(int max, int incr) returns Range
@@ -132,7 +139,121 @@ for i from rangeStep(10, 2)
 x // => [0, 2, 4, 6, 8]
 ```
 
-### `toList`
+#### `pair`
+
+```typescript
+function pair<A, B>(A a, B b) returns Pair<A, B>
+```
+
+Creates a tuple. Example:
+
+```typescript
+let myBinding = pair(1, "foo")
+```
+
+#### `makeMap`
+
+```typescript
+function makeMap<K, V>(vararg Pair<K, V> elems) returns IterableMap<K, V>
+```
+
+Make a map from a list of pairs. Example:
+
+```typescript
+makeMap(
+    pair(1, "a"),
+    pair(2, "b"),
+    pair(3, "c"),
+)
+// => {
+//   1 => "a",
+//   2 => "b",
+//   3 => "c"
+// }
+```
+
+### `class Ownable`
+
+```typescript
+abstract class Ownable
+```
+
+Represents an ownable object exposing two methods: `own`, to claim
+ownership of an object, and `maybeFree`, which will destroy the object
+if unowned.
+
+#### `own`
+
+```typescript
+function Ownable.own()
+```
+
+Own's this callable to prevent it from being freed automatically.
+You must manually `destroy` this object to free it. Example:
+
+```typescript
+let myPair = pair(1, "a")..own()
+
+// this line would free `myPair` unless it was owned
+let myMap = makeMap(myPair)
+
+// do more stuff with `myPair
+
+destroy myPair
+
+// Callables can also be owned
+Predicate<int> isEven = x -> x mod 2 == 0
+isEven.own()
+```
+
+#### `maybeFree`
+
+```typescript
+function Ownable.maybeFree() returns bool
+```
+
+Destroys this callable if it has not been owned. Returns true if the
+object was destroyed, otherwise false. Example:
+
+```typescript
+let myOwnedPair = pair(1, "a")..own()
+let myUnownedPair = pair(2, "b")
+
+myOwnedPair.maybeFree() // => false
+myUnownedPair.maybeFree() // => true
+```
+
+### `Range`
+
+```typescript
+class Range extends Ownable
+    construct(int start, int finish, int incr)
+```
+
+Represents a range of numbers. Can be iterated. Default start is `0`,
+default finish is `INT_MAX`, default increment amount is `1`. Increment
+can be negative for a backwards range. Example:
+
+```typescript
+let range = new Range(0, 10, 1)
+```
+
+#### `reset`
+
+```typescript
+function Range.reset()
+```
+
+Reset this iterator. Example:
+
+```typescript
+let myRange = range(10)
+range.next() // => 0
+range.reset()
+range.next() // => 0
+```
+
+#### `toList`
 
 ```typescript
 function Range.toList() returns LinkedList<int>
@@ -147,29 +268,51 @@ range(10).toList() // => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 ### `Pair`
 
 ```typescript
-class Pair<A, B>
+class Pair<A, B> extends Ownable
+    A a
+    B b
+
+    construct(A a, B b)
 ```
 
-A tuple which can be cast to index for use in data types
-
-### `pair`
+A tuple which can be cast to index for use in data types. Example:
 
 ```typescript
-function pair<A, B>(A a, B b) returns Pair<A, B>
+let pair = new Pair(1, "a")
 ```
 
-Creates a tuple. Example:
+#### `head`
 
 ```typescript
-let myBinding = pair(1, "foo")
+function Pair<A, B>.head() returns A
 ```
 
-## Package `LodashExtensions`
+Get the first element of the pair. Example:
+
+```typescript
+let myPair = pair(1, "a")
+myPair.head() // => 1
+```
+
+#### `tail`
+
+```typescript
+function Pair<A, B>.tail() returns B
+```
+
+Get the last element of the pair. Example:
+
+```typescript
+let myPair = pair(1, "a")
+myPair.tail() // => "a"
+```
+
+## `package LodashExtensions`
 
 This package provides various extension methods for `LinkedList` and `IterableMap`. Similar to the WurstFP API, these methods will attempt to
 destroy the closures and objects they are invoked upon and passed.
 
-### `equals`
+#### `equals`
 
 ```typescript
 function LinkedList<T>.equals<T>(LinkedList<T> b) returns bool
@@ -186,7 +329,7 @@ let b = asOwnedList(1, 2, 3)
 a.equals(b) // => true
 ```
 
-### `takeWhile`
+#### `takeWhile`
 
 ```typescript
 function LinkedList<T>.takeWhile<T>(TriFunction<T, int, LinkedList<T>, bool> predicate) returns LinkedList<T>
@@ -203,7 +346,7 @@ The predicate is invoked with one to three argument(s): (value, index, list). Ex
 range(5).takeWhile(x -> x < 3) // => [0, 1, 2]
 ```
 
-### `take`
+#### `take`
 
 ```typescript
 function LinkedList<T>.take<T>(int numElems) returns LinkedList<T>
@@ -216,7 +359,7 @@ Example:
 asList(1, 2, 3, 4, 5).take(4) // => [1, 2, 3, 4]
 ```
 
-### `foldl`
+#### `foldl`
 
 ```typescript
 function LinkedList<T>.foldl<Q, T>(Q startValue, BiFunction<T, Q, Q> transform) returns Q
@@ -231,7 +374,7 @@ asList("h", "e", "l", "l", "o").foldl("", (acc, val) -> acc + val)
 // => "hello"
 ```
 
-### `foldr`
+#### `foldr`
 
 ```typescript
 function LinkedList<T>.foldr<Q, T>(Q startValue, BiFunction<T, Q, Q> transform) returns Q
@@ -248,7 +391,7 @@ asList("h", "e", "l", "l", "o").foldr("", (acc, val) -> acc + val)
 // => "olleh"
 ```
 
-### `every`
+#### `every`
 
 ```typescript
 function LinkedList<T>.every<T>(Predicate<T> predicate) returns bool
@@ -263,7 +406,7 @@ asList(1, 2, 3, 4, 5).every(x -> x < 9) // => true
 asList(1, 2, 3, 4, 5).every(x -> x < 5) // => false
 ```
 
-### `any`
+#### `any`
 
 ```typescript
 function LinkedList<T>.any<T>(Predicate<T> predicate) returns bool
@@ -277,7 +420,7 @@ asList(1, 2, 3, 4, 5).any(x -> x < 2) // => true
 asList(1, 2, 3, 4, 5).any(x -> x > 9) // => false
 ```
 
-### `keys`
+#### `keys`
 
 ```typescript
 function IterableMap<T, Q>.keys<T, Q>() returns LinkedList<T>
@@ -294,7 +437,7 @@ let map = makeMap(
 // => ["a", "p", "o"]
 ```
 
-### `values`
+#### `values`
 
 ```typescript
 function IterableMap<T, Q>.values<T, Q>() returns LinkedList<Q>
@@ -311,7 +454,7 @@ let map = makeMap(
 // => ["apple", "pear", "orange"]
 ```
 
-### `map`
+#### `map`
 
 ```typescript
 function LinkedList<T>.map<T, Q>(BiFunction<T, int, Q> transform) returns LinkedList<Q>
@@ -328,7 +471,7 @@ Example:
 asList(1, 2, 3).map(x -> x.squared()) // => [1, 4, 9]
 ```
 
-### `flatten`
+#### `flatten`
 
 ```typescript
 function LinkedList<LinkedList<T>>.flatten<T>() returns LinkedList<T>
@@ -345,7 +488,7 @@ asList(
 // => [1, 2, 3, 4, 5, 6]
 ```
 
-### `drop`
+#### `drop`
 
 ```typescript
 function LinkedList<T>.drop<T>(int numElems) returns LinkedList<T>
@@ -358,7 +501,7 @@ beginning. Example:
 asList(1, 2, 3, 4, 5, 6).drop(2) // => [3, 4, 5, 6]
 ```
 
-### `filter`
+#### `filter`
 
 ```typescript
 function LinkedList<T>.lodashFilter<T>(Predicate<T> filter) returns LinkedList<T>
@@ -373,7 +516,7 @@ asList(1, 2, 3, 4, 5).lodashFilter(x -> x mod 2 == 0)
 // => [2, 4]
 ```
 
-### `sum`
+#### `sum`
 
 ```typescript
 function LinkedList<int>.sum() returns int
@@ -389,7 +532,7 @@ asList(1, 2, 3).sum() // => 6
 asList(1.1, 2.2, 3.3).sum() // => 6.6
 ```
 
-### `length`
+#### `length`
 
 ```typescript
 function LinkedList<T>.length<T>() returns int
@@ -401,7 +544,7 @@ Gets the length of list and maybe frees it. Example:
 asList(1, 2, 3).length() // => 3
 ```
 
-### `each`
+#### `each`
 
 ```typescript
 function LinkedList<T>.each<T>(VoidFunction<T> func)
@@ -417,7 +560,7 @@ Example:
 asList(1, 2, 3).each(x -> print(x))
 ```
 
-### `zipObject`
+#### `zipObject`
 
 ```typescript
 function LinkedList<A>.zipObject<A, B>(LinkedList<B> lst) returns IterableMap<A, B>
@@ -431,7 +574,25 @@ asList(1, 2, 3).zipObject(asList("a", "b", "c"))
 // => { 1 => "a", 2 => "b", 3 => "c" }
 ```
 
-### `uniq`
+#### `zip`
+
+```typescript
+function zip<A, B>(LinkedList<A> a, LinkedList<B> b) returns LinkedList<Pair<A, B>>
+```
+
+Creates a list of grouped elements, the first of which contains the
+first elements of the given lists, the second of which contains the
+second elements of the given lists.
+
+```typescript
+let keys = asList(1, 2, 3)
+let values = asList("a", "b", "c")
+
+zip(keys, values)
+// => { 1 => "a", 2 => "b", 3 => "c" }
+```
+
+#### `uniq`
 
 ```typescript
 function LinkedList<T>.uniq<T>() returns LinkedList<T>
@@ -445,7 +606,7 @@ they occur in the list. Example:
 asList(1, 3, 2, 1, 4, 2, 5).uniq() // => [1, 3, 2, 4, 5]
 ```
 
-### `uniqBy`
+#### `uniqBy`
 
 ```typescript
 function LinkedList<T>.uniqBy<T, R>(Function<T, R> func) returns LinkedList<T>
@@ -461,7 +622,7 @@ asList(1.0, 1.1, 1.2, 2.0, 2.1, 2.2).uniqBy(x -> x.floor())
 // => [1.0, 2.0]
 ```
 
-### `union`
+#### `union`
 
 ```typescript
 function LinkedList<T>.union<T>(LinkedList<T> lst) returns LinkedList<T>
@@ -473,7 +634,7 @@ Creates a list of unique values, in order, from the given lists. Example:
 asList(1, 2, 3).union(asList(3, 4, 5)) // => [1, 2, 3, 4, 5]
 ```
 
-### `intersection`
+#### `intersection`
 
 ```typescript
 function LinkedList<T>.intersection<T>(LinkedList<T> lst) returns LinkedList<T>
@@ -485,7 +646,7 @@ Creates an array of unique values that are included in both given lists. Example
 asList(1, 2, 3).intersection(asList(3, 4, 5)) // => [3]
 ```
 
-### `difference`
+#### `difference`
 
 ```typescript
 function LinkedList<T>.difference<T>(LinkedList<T> lst) returns LinkedList<T>
@@ -497,7 +658,7 @@ Creates an array of array values not included in the other given lists. Example:
 asList(1, 2, 3).difference(asList(3, 4, 5)) // => [1, 2]
 ```
 
-### `indexBy`
+#### `indexBy`
 
 ```typescript
 function LinkedList<T>.indexBy<T, R>(Function<T, R> idx) returns IterableMap<R, T>
@@ -522,7 +683,7 @@ list.indexBy(x -> x.b)
 // }
 ```
 
-### `groupBy`
+#### `groupBy`
 
 ```typescript
 function LinkedList<T>.groupBy<T, R>(Function<T, R> idx) returns IterableMap<R, LinkedList<T>>
@@ -549,7 +710,7 @@ list.groupBy(x -> x.b)
 // }
 ```
 
-### `mapValues`
+#### `mapValues`
 
 ```typescript
 function IterableMap<S, T>.mapValues<S, T, R>(BiFunction<S, T, R> transform) returns IterableMap<S, R>
@@ -573,7 +734,7 @@ map.mapValues(x -> x.toUpperCase())
 // }
 ```
 
-### `mapKeys`
+#### `mapKeys`
 
 ```typescript
 function IterableMap<S, T>.mapKeys<S, T, R>(BiFunction<S, T, R> transform) returns IterableMap<R, T>
@@ -597,7 +758,7 @@ map.mapValues(x -> x + 1)
 // }
 ```
 
-### `toPairs`
+#### `toPairs`
 
 ```typescript
 function IterableMap<S, T>.toPairs<S, T>() returns LinkedList<Pair<S, T>>
@@ -621,7 +782,7 @@ map.toPairs()
 // ]
 ```
 
-### `fromPairs`
+#### `fromPairs`
 
 ```typescript
 function LinkedList<Pair<S, T>>.fromPairs<S, T>() returns IterableMap<S, T>
@@ -645,7 +806,7 @@ map.fromPairs()
 // }
 ```
 
-### `chunk`
+#### `chunk`
 
 ```typescript
 function LinkedList<T>.chunk<T>(int size) returns LinkedList<LinkedList<T>>
@@ -658,7 +819,7 @@ asList(1, 2, 3, 4, 5, 6, 7, 8).chunk(3)
 // => [[1, 2, 3], [4, 5, 6], [7, 8]]
 ```
 
-### `pull`
+#### `pull`
 
 ```typescript
 function LinkedList<T>.pull<T>(T pull) returns LinkedList<T>
