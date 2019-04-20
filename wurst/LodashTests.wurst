@@ -5,7 +5,7 @@ import Lodash
 import LodashExtensions
 
 @Test
-function range()
+function testRange()
     let a = range(10)
     a.hasNext().assertTrue()
     a.next().assertEquals(0)
@@ -62,13 +62,21 @@ function pair()
 function maybeFree()
     // LinkedList<T>.maybeFree<T>()
     // IterableMap<K, V>.maybeFree<K, V>()
+    // Ownable.maybeFree()
 
     asOwnedList(1, 2, 3).maybeFree().assertFalse()
     asList(1, 2, 3).maybeFree().assertTrue()
+    ownList(asList(1, 2, 3)).maybeFree().assertFalse()
+
     new OwnedIterableMap<int, int>().maybeFree().assertFalse()
     new IterableMap<int, int>().maybeFree().assertTrue()
-    ownList(asList(1, 2, 3)).maybeFree().assertFalse()
     ownMap(new IterableMap<int, int>()).maybeFree().assertFalse()
+
+    pair(1, 2)..own().maybeFree().assertFalse()
+    pair(1, 2).maybeFree().assertTrue()
+
+    range()..own().maybeFree().assertFalse()
+    range().maybeFree().assertTrue()
 
 function isOwnedLinkedList(LinkedList<int> x) returns boolean
     return x instanceof OwnedLinkedList<int>
