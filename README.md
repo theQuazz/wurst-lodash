@@ -223,7 +223,7 @@ myOwnedPair.maybeFree() // => false
 myUnownedPair.maybeFree() // => true
 ```
 
-### `Range`
+### `class Range`
 
 ```typescript
 class Range extends Ownable
@@ -265,7 +265,7 @@ Converts a range to a list. Example:
 range(10).toList() // => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
 ```
 
-### `Pair`
+### `class Pair`
 
 ```typescript
 class Pair<A, B> extends Ownable
