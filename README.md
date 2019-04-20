@@ -9,18 +9,83 @@ Functional Programming Utilities for [WurstScript](https://wurstlang.org/) inspi
 This library provides utility functions for operating on `LinkedList`
 and `IterableMap` objects as well as utility classes `Range` and `Pair`.
 These functions will attempt to destroy the lists and maps
-that they act upon unless they are explicitly owned. To own a list or map
-cast it to the `OwnedLinkedList` or `OwnedIterableMap` equivalent. To own
-a closure call the `.own` method on it. There are several convenience
-methods for owning closures of various arities, for example:
+that they act upon unless they are explicitly owned.
 
+### `makeMap`
+
+```typescript
+function makeMap<K, V>(vararg Pair<K, V> elems) returns IterableMap<K, V>
 ```
+
+Make a map from a list of pairs. Example:
+
+```typescript
+makeMap(
+    pair(1, "a"),
+    pair(2, "b"),
+    pair(3, "c"),
+)
+// => {
+//   1 => "a",
+//   2 => "b",
+//   3 => "c"
+// }
+```
+
+### `ownList`
+
+```typescript
+function ownList<T>(LinkedList<T> list) returns OwnedLinkedList<T>
+```
+
+Own a list preventing automatic deletion by Lodash methods. Example:
+
+```typescript
+let list = asList(1, 2, 3)
+let myOwnedList = ownList(list)
+```
+
+### `ownMap`
+
+```typescript
+function ownMap<K, V>(IterableMap<K, V> map) returns OwnedIterableMap<K, V>
+```
+
+Own a map preventing automatic deletion by Lodash methods. Example:
+
+```typescript
+let map = asList(pair(1, 2), pair(2, 3)).fromPairs()
+let myOwnedMap = ownMap(map)
+```
+
+### `own`
+
+```typescript
+function Callable.own()
+```
+
+Own a callable. Example:
+
+```typescript
+Predicate<int> isEven = x -> x mod 2 == 0
+isEven.own()
+```
+
+### `owned`
+
+```typescript
+static function Callable.owned(Callable func) returns Callable
+```
+
+Create an owned callable. Example:
+
+```typescript
 let myOwnedFunc = Function<int, string>.owned(x -> x.toString())
 ```
 
 ### `Range`
 
-```
+```typescript
 class Range
 ```
 
@@ -28,7 +93,7 @@ Represents a range of numbers. Can be iterated. Default `min` is `0`, default ma
 
 ### `range`
 
-```
+```typescript
 function range(int min, int max, int incr) returns Range
 
 function range(int min, int max) returns Range
@@ -38,19 +103,50 @@ function range(int max) returns Range
 function range() returns Range
 ```
 
-Creates a range which is iterable from start to finish by incr
+Creates a range which is iterable from start to finish by incr. Example:
+
+```typescript
+let x = new LinkedList<int>
+for i from range(0, 10)
+    x.add(i)
+x // => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+
+let y = new LinkedList<int>
+for i from range(4, 10, 2)
+    x.add(i)
+x // => [4, 6, 8]
+```
 
 ### `rangeStep`
 
-```
+```typescript
 function rangeStep(int max, int incr) returns Range
 ```
 
-Creates a range which is iterable from 0 to finish by incr
+Creates a range which is iterable from 0 to finish by incr. Example:
+
+```typescript
+let y = new LinkedList<int>
+for i from rangeStep(10, 2)
+    x.add(i)
+x // => [0, 2, 4, 6, 8]
+```
+
+### `toList`
+
+```typescript
+function Range.toList() returns LinkedList<int>
+```
+
+Converts a range to a list. Example:
+
+```typescript
+range(10).toList() // => [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
+```
 
 ### `Pair`
 
-```
+```typescript
 class Pair<A, B>
 ```
 
@@ -58,11 +154,15 @@ A tuple which can be cast to index for use in data types
 
 ### `pair`
 
-```
+```typescript
 function pair<A, B>(A a, B b) returns Pair<A, B>
 ```
 
-Creates a tuple
+Creates a tuple. Example:
+
+```typescript
+let myBinding = pair(1, "foo")
+```
 
 ## Package `LodashExtensions`
 
@@ -71,279 +171,502 @@ destroy the closures and objects they are invoked upon and passed.
 
 ### `equals`
 
-```
-LinkedList<T>.equals<T>(LinkedList<T> b) returns bool
+```typescript
+function LinkedList<T>.equals<T>(LinkedList<T> b) returns bool
 
-IterableMap<K, V>.equals<K, V>(IterableMap<K, V> b) returns bool
+function IterableMap<K, V>.equals<K, V>(IterableMap<K, V> b) returns bool
 ```
 
-Checks for equality of two lists/maps
+Checks for equality of two lists/maps. Example:
+
+```typescript
+let a = asList(1, 2, 3)
+let b = asOwnedList(1, 2, 3)
+
+a.equals(b) // => true
+```
 
 ### `takeWhile`
 
-```
-LinkedList<T>.takeWhile<T>(TriFunction<T, int, LinkedList<T>, bool> predicate) returns LinkedList<T>
+```typescript
+function LinkedList<T>.takeWhile<T>(TriFunction<T, int, LinkedList<T>, bool> predicate) returns LinkedList<T>
 
-LinkedList<T>.takeWhile<T>(BiFunction<T, int, bool> predicate) returns LinkedList<T>
+function LinkedList<T>.takeWhile<T>(BiFunction<T, int, bool> predicate) returns LinkedList<T>
 
-LinkedList<T>.takeWhile<T>(Predicate<T> predicate) returns LinkedList<T>
+function LinkedList<T>.takeWhile<T>(Predicate<T> predicate) returns LinkedList<T>
 ```
 
 Creates a slice of list with elements taken from the beginning. Elements are taken until predicate returns falsey.
-The predicate is invoked with one to three argument(s): (value, index, list).
+The predicate is invoked with one to three argument(s): (value, index, list). Example:
+
+```typescript
+range(5).takeWhile(x -> x < 3) // => [0, 1, 2]
+```
 
 ### `take`
 
-```
-LinkedList<T>.take<T>(int numElems) returns LinkedList<T>
+```typescript
+function LinkedList<T>.take<T>(int numElems) returns LinkedList<T>
 ```
 
 Creates a slice of list with numElems elements taken from the beginning.
+Example:
+
+```typescript
+asList(1, 2, 3, 4, 5).take(4) // => [1, 2, 3, 4]
+```
 
 ### `foldl`
 
-```
-LinkedList<T>.foldl<Q, T>(Q startValue, BiFunction<T, Q, Q> transform) returns Q
+```typescript
+function LinkedList<T>.foldl<Q, T>(Q startValue, BiFunction<T, Q, Q> transform) returns Q
 ```
 
 Reduces collection to a value which is the accumulated result of running each element in collection thru iteratee,
 where each successive invocation is supplied the return value of the previous. The order if iteration is from left
-to right. The transform is invoked with two arguments: (accumulator, value)
+to right. The transform is invoked with two arguments: (accumulator, value). Example:
+
+```typescript
+asList("h", "e", "l", "l", "o").foldl("", (acc, val) -> acc + val)
+// => "hello"
+```
 
 ### `foldr`
 
-```
-LinkedList<T>.foldr<Q, T>(Q startValue, BiFunction<T, Q, Q> transform) returns Q
+```typescript
+function LinkedList<T>.foldr<Q, T>(Q startValue, BiFunction<T, Q, Q> transform) returns Q
 ```
 
-Reduces collection to a value which is the accumulated result of running each element in collection thru iteratee,
-where each successive invocation is supplied the return value of the previous. The order if iteration is from right
-to left. The transform is invoked with two arguments: (accumulator, value)
+Reduces collection to a value which is the accumulated result of running
+each element in collection thru iteratee, where each successive
+invocation is supplied the return value of the previous. The order if
+iteration is from right to left. The transform is invoked with two
+arguments: (accumulator, value). Example:
+
+```typescript
+asList("h", "e", "l", "l", "o").foldr("", (acc, val) -> acc + val)
+// => "olleh"
+```
 
 ### `every`
 
-```
-LinkedList<T>.every<T>(Predicate<T> predicate) returns bool
+```typescript
+function LinkedList<T>.every<T>(Predicate<T> predicate) returns bool
 ```
 
-Checks if predicate returns truthy for all elements of collection. Iteration is stopped once predicate returns falsey.
-The predicate is invoked with one argument: (value).
+Checks if predicate returns truthy for all elements of collection.
+Iteration is stopped once predicate returns falsey.
+The predicate is invoked with one argument: (value). Example:
 
+```typescript
+asList(1, 2, 3, 4, 5).every(x -> x < 9) // => true
+asList(1, 2, 3, 4, 5).every(x -> x < 5) // => false
+```
 
 ### `any`
 
-```
-LinkedList<T>.any<T>(Predicate<T> predicate) returns bool
+```typescript
+function LinkedList<T>.any<T>(Predicate<T> predicate) returns bool
 ```
 
 Checks if predicate returns truthy for any element of collection. Iteration is stopped once predicate returns truthy.
-The predicate is invoked with one argument: (value).
+The predicate is invoked with one argument: (value). Example:
+
+```typescript
+asList(1, 2, 3, 4, 5).any(x -> x < 2) // => true
+asList(1, 2, 3, 4, 5).any(x -> x > 9) // => false
+```
 
 ### `keys`
 
-```
-IterableMap<T, Q>.keys<T, Q>() returns LinkedList<T>
+```typescript
+function IterableMap<T, Q>.keys<T, Q>() returns LinkedList<T>
 ```
 
-Creates a list of the keys of map
+Creates a list of the keys of map. Example:
+
+```typescript
+let map = makeMap(
+    pair("a", "apple"),
+    pair("p", "pear"),
+    pair("o", "orange")
+).keys()
+// => ["a", "p", "o"]
+```
 
 ### `values`
 
-```
-IterableMap<T, Q>.values<T, Q>() returns LinkedList<Q>
+```typescript
+function IterableMap<T, Q>.values<T, Q>() returns LinkedList<Q>
 ```
 
-Creates a list of the values of map
+Creates a list of the values of map. Example:
+
+```typescript
+let map = makeMap(
+    pair("a", "apple"),
+    pair("p", "pear"),
+    pair("o", "orange")
+).keys()
+// => ["apple", "pear", "orange"]
+```
 
 ### `map`
 
-```
-LinkedList<T>.map<T, Q>(Function<T, Q> transform) returns LinkedList<Q>
+```typescript
+function LinkedList<T>.map<T, Q>(BiFunction<T, int, Q> transform) returns LinkedList<Q>
 
-LinkedList<T>.map<T, Q>(BiFunction<T, int, Q> transform) returns LinkedList<Q>
-
-IterableMap<S, T>.map<S, T, R>(BiFunction<S, T, R> transform) returns LinkedList<R>
+function IterableMap<S, T>.map<S, T, R>(BiFunction<S, T, R> transform) returns LinkedList<R>
 ```
 
 Creates a list of values by running each element in collection thru transform. The
 transform for lists is invoked with one or two argument(s): (value, index).
 The transform for maps is invoked with two arguments: (key, value).
+Example:
+
+```typescript
+asList(1, 2, 3).map(x -> x.squared()) // => [1, 4, 9]
+```
 
 ### `flatten`
 
-```
-LinkedList<LinkedList<T>>.flatten<T>() returns LinkedList<T>
+```typescript
+function LinkedList<LinkedList<T>>.flatten<T>() returns LinkedList<T>
 ```
 
-Flattens list a level less deep.
+Flattens list a level less deep. Example:
+
+```typescript
+asList(
+    asList(1, 2, 3),
+    asList(4, 5),
+    asList(6)
+).flatten()
+// => [1, 2, 3, 4, 5, 6]
+```
 
 ### `drop`
 
-```
-LinkedList<T>.drop<T>(int numElems) returns LinkedList<T>
+```typescript
+function LinkedList<T>.drop<T>(int numElems) returns LinkedList<T>
 ```
 
-Creates a slice of list with numELems elements dropped from the beginning.
+Creates a slice of list with numELems elements dropped from the
+beginning. Example:
+
+```typescript
+asList(1, 2, 3, 4, 5, 6).drop(2) // => [3, 4, 5, 6]
+```
 
 ### `filter`
 
-```
-LinkedList<T>.reject<T>(Predicate<T> filter) returns LinkedList<T>
+```typescript
+function LinkedList<T>.lodashFilter<T>(Predicate<T> filter) returns LinkedList<T>
 ```
 
-Iterates over elements of list, returning a list of all elements predicate returns truthy for.
+Iterates over elements of list, returning a list of all elements
+predicate returns truthy for.
 The predicate is invoked with one argument: (value).
 
-Alias of `filter`
+```typescript
+asList(1, 2, 3, 4, 5).lodashFilter(x -> x mod 2 == 0)
+// => [2, 4]
+```
 
 ### `sum`
 
-```
-LinkedList<int>.sum() returns int
+```typescript
+function LinkedList<int>.sum() returns int
 
-LinkedList<real>.sum() returns real
+function LinkedList<real>.sum() returns real
 ```
 
-Computes the sum of the values in list.
+Computes the sum of the values in list. Example:
+
+```typescript
+asList(1, 2, 3).sum() // => 6
+
+asList(1.1, 2.2, 3.3).sum() // => 6.6
+```
 
 ### `length`
 
-```
-LinkedList<T>.length<T>() returns int
+```typescript
+function LinkedList<T>.length<T>() returns int
 ```
 
-Gets the length of list and maybe frees it
+Gets the length of list and maybe frees it. Example:
+
+```typescript
+asList(1, 2, 3).length() // => 3
+```
 
 ### `each`
 
-```
-LinkedList<T>.each<T>(VoidFunction<T> func)
+```typescript
+function LinkedList<T>.each<T>(VoidFunction<T> func)
 
-LinkedList<T>.each<T>(VoidBiFunction<T, int> func)
+function LinkedList<T>.each<T>(VoidBiFunction<T, int> func)
 ```
 
 Iterates over elements of collection and invokes iteratee for each element.
 The iteratee is invoked with one or two argument(s): (value, index).
+Example:
+
+```typescript
+asList(1, 2, 3).each(x -> print(x))
+```
 
 ### `zipObject`
 
-```
-LinkedList<A>.zipObject<A, B>(LinkedList<B> lst) returns IterableMap<A, B>
+```typescript
+function LinkedList<A>.zipObject<A, B>(LinkedList<B> lst) returns IterableMap<A, B>
 ```
 
-Creates an IterableMap with the keys from A and the values from B
+Creates an IterableMap with the keys from A and the values from B.
+Example:
+
+```typescript
+asList(1, 2, 3).zipObject(asList("a", "b", "c"))
+// => { 1 => "a", 2 => "b", 3 => "c" }
+```
 
 ### `uniq`
 
-```
-LinkedList<T>.uniq<T>() returns LinkedList<T>
+```typescript
+function LinkedList<T>.uniq<T>() returns LinkedList<T>
 ```
 
 Creates a duplicate-free version of a list in which only the first occurrence
 of each element is kept. The order of result values is determined by the order
-they occur in the list.
+they occur in the list. Example:
+
+```typescript
+asList(1, 3, 2, 1, 4, 2, 5).uniq() // => [1, 3, 2, 4, 5]
+```
 
 ### `uniqBy`
 
-```
-LinkedList<T>.uniqBy<T, R>(Function<T, R> func) returns LinkedList<T>
+```typescript
+function LinkedList<T>.uniqBy<T, R>(Function<T, R> func) returns LinkedList<T>
 ```
 
 Creates a duplicate-free version of a list in which only the first occurrence
 of each element is kept as compared by func. The order of result values is
 determined by the order they occur in the list. The iteratee is invoked with
-one argument: (value)
+one argument: (value). Example:
+
+```typescript
+asList(1.0, 1.1, 1.2, 2.0, 2.1, 2.2).uniqBy(x -> x.floor())
+// => [1.0, 2.0]
+```
 
 ### `union`
 
-```
-LinkedList<T>.union<T>(LinkedList<T> lst) returns LinkedList<T>
+```typescript
+function LinkedList<T>.union<T>(LinkedList<T> lst) returns LinkedList<T>
 ```
 
-Creates a list of unique values, in order, from the given lists
+Creates a list of unique values, in order, from the given lists. Example:
+
+```typescript
+asList(1, 2, 3).union(asList(3, 4, 5)) // => [1, 2, 3, 4, 5]
+```
 
 ### `intersection`
 
-```
-LinkedList<T>.intersection<T>(LinkedList<T> lst) returns LinkedList<T>
+```typescript
+function LinkedList<T>.intersection<T>(LinkedList<T> lst) returns LinkedList<T>
 ```
 
-Creates an array of unique values that are included in both given lists.
+Creates an array of unique values that are included in both given lists. Example:
+
+```typescript
+asList(1, 2, 3).intersection(asList(3, 4, 5)) // => [3]
+```
 
 ### `difference`
 
-```
-LinkedList<T>.difference<T>(LinkedList<T> lst) returns LinkedList<T>
+```typescript
+function LinkedList<T>.difference<T>(LinkedList<T> lst) returns LinkedList<T>
 ```
 
-Creates an array of array values not included in the other given lists.
+Creates an array of array values not included in the other given lists. Example:
+
+```typescript
+asList(1, 2, 3).difference(asList(3, 4, 5)) // => [1, 2]
+```
 
 ### `indexBy`
 
-```
-LinkedList<T>.indexBy<T, R>(Function<T, R> idx) returns IterableMap<R, T>
+```typescript
+function LinkedList<T>.indexBy<T, R>(Function<T, R> idx) returns IterableMap<R, T>
 ```
 
 Creates an iterable map composed of keys generated from the results of running each element of collection thru iteratee.
 The corresponding value of each key is the last element responsible for generating the key. The iteratee is invoked with
-one argument: (value).
+one argument: (value). Example:
+
+```typescript
+let list = asList(
+    pair(1, "a"),
+    pair(2, "b"),
+    pair(3, "c")
+)
+
+list.indexBy(x -> x.b)
+// => {
+//   "a" => pair(1, "a"),
+//   "b" => pair(2, "b"),
+//   "c" => pair(3, "c")
+// }
+```
 
 ### `groupBy`
 
-```
-LinkedList<T>.groupBy<T, R>(Function<T, R> idx) returns IterableMap<R, LinkedList<T>>
+```typescript
+function LinkedList<T>.groupBy<T, R>(Function<T, R> idx) returns IterableMap<R, LinkedList<T>>
 ```
 
 Creates an iterable map composed of keys generated from the results of running each element of collection thru iteratee.
 The order of grouped values is determined by the order they occur in collection. The corresponding value of each key is
-a list of elements responsible for generating the key. The iteratee is invoked with one argument: (value).
+a list of elements responsible for generating the key. The iteratee is invoked with one argument: (value). Example:
+
+```typescript
+let list = asList(
+    pair(1, "a"),
+    pair(2, "b"),
+    pair(3, "c"),
+    pair(4, "a"),
+    pair(5, "c"),
+)
+
+list.groupBy(x -> x.b)
+// => {
+//   "a" => [pair(1, "a"), pair(4, "a")],
+//   "b" => [pair(2, "b")],
+//   "c" => [pair(3, "c"), pair(5, "c")]
+// }
+```
 
 ### `mapValues`
 
-```
-IterableMap<S, T>.mapValues<S, T, R>(BiFunction<S, T, R> transform) returns IterableMap<S, R>
+```typescript
+function IterableMap<S, T>.mapValues<S, T, R>(BiFunction<S, T, R> transform) returns IterableMap<S, R>
 ```
 
 Creates an iterable map with the same keys as map and values generated by running each property of map thru iteratee.
-The iteratee is invoked with two arguments: (key, value)
+The iteratee is invoked with two arguments: (key, value). Example:
+
+```typescript
+let map = makeMap(
+    pair(1, "a"),
+    pair(2, "b"),
+    pair(3, "c"),
+)
+
+map.mapValues(x -> x.toUpperCase())
+// => {
+//   1 => "A",
+//   2 => "B",
+//   3 => "C"
+// }
+```
 
 ### `mapKeys`
 
-```
-IterableMap<S, T>.mapKeys<S, T, R>(BiFunction<S, T, R> transform) returns IterableMap<R, T>
+```typescript
+function IterableMap<S, T>.mapKeys<S, T, R>(BiFunction<S, T, R> transform) returns IterableMap<R, T>
 ```
 
 Creates an iterable map with the same values as map and keys generated by running each key of map thru iteratee.
-The iteratee is invoked with two arguments: (key, value)
+The iteratee is invoked with two arguments: (key, value). Example:
+
+```typescript
+let map = makeMap(
+    pair(1, "a"),
+    pair(2, "b"),
+    pair(3, "c"),
+)
+
+map.mapValues(x -> x + 1)
+// => {
+//   2 => "a",
+//   3 => "b",
+//   4 => "c"
+// }
+```
 
 ### `toPairs`
 
-```
-IterableMap<S, T>.toPairs<S, T>() returns LinkedList<Pair<S, T>>
+```typescript
+function IterableMap<S, T>.toPairs<S, T>() returns LinkedList<Pair<S, T>>
 ```
 
 Converts an interable map to a list of pairs for each key, value pair.
+Example:
+
+```typescript
+let map = makeMap(
+    pair(1, "a"),
+    pair(2, "b"),
+    pair(3, "c"),
+)
+
+map.toPairs()
+// => [
+//   pair(1, "a"),
+//   pair(2, "b"),
+//   pair(3, "c")
+// ]
+```
 
 ### `fromPairs`
 
-```
-LinkedList<Pair<S, T>>.fromPairs<S, T>() returns IterableMap<S, T>
+```typescript
+function LinkedList<Pair<S, T>>.fromPairs<S, T>() returns IterableMap<S, T>
 ```
 
 Takes a list of key value pairs and transforms them into a iterable map.
+Example:
+
+```typescript
+let map = asList(
+    pair(1, "a"),
+    pair(2, "b"),
+    pair(3, "c"),
+)
+
+map.fromPairs()
+// => {
+//   1 => "a",
+//   2 => "b",
+//   3 => "c"
+// }
+```
 
 ### `chunk`
 
-```
-LinkedList<T>.chunk<T>(int size) returns LinkedList<LinkedList<T>>
+```typescript
+function LinkedList<T>.chunk<T>(int size) returns LinkedList<LinkedList<T>>
 ```
 
-Creates a list of elements split into groups the length of size. If list can't be split evenly, the final chunk will be the remaining elements.
+Creates a list of elements split into groups the length of size. If list can't be split evenly, the final chunk will be the remaining elements. Example:
+
+```typescript
+asList(1, 2, 3, 4, 5, 6, 7, 8).chunk(3)
+// => [[1, 2, 3], [4, 5, 6], [7, 8]]
+```
 
 ### `pull`
 
-```
-LinkedList<T>.pull<T>(T pull) returns LinkedList<T>
+```typescript
+function LinkedList<T>.pull<T>(T pull) returns LinkedList<T>
 ```
 
-Removes all given values from list.
+Removes all given values from list. Example:
+
+```typescript
+asList(1, 2, 3, 4, 5, 4, 3, 2, 1).pull(3)
+// => [1, 2, 4, 5, 4, 2, 1]
+```

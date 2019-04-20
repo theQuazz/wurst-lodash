@@ -4,6 +4,15 @@ import HashMap
 import HashSet
 
 /**
+ * Make a map from a list of pairs
+ */
+function makeMap<K, V>(vararg Pair<K, V> elems) returns IterableMap<K, V>
+    let map = new IterableMap<K, V>()
+    for elem from elems
+        map.put(elem.a, elem.b)
+    return map
+
+/**
  * Represents a range of numbers
  */
 public class Range
@@ -126,7 +135,7 @@ public class OwnedIterableMap<K, V> extends IterableMap<K, V>
  * The interface from which all lambdas will inherit
  *
  * Can be "owned" to prevent being freed with the `.own()` method
- * Methods in the WurstFP library will attempt to free callables that they are passed
+ * Methods in the Lodash library will attempt to free callables that they are passed
  */
 public abstract class Callable
     var cleanup = true
@@ -247,7 +256,7 @@ public function IterableMap<K, V>.maybeFree<K, V>() returns bool
     return false
 
 /**
- * Creates an owned list preventing automatic deletion by WurstFP methods
+ * Creates an owned list preventing automatic deletion by Lodash methods
  */
 public function asOwnedList<T>(vararg T ts) returns OwnedLinkedList<T>
     let ll = new OwnedLinkedList<T>
@@ -256,7 +265,7 @@ public function asOwnedList<T>(vararg T ts) returns OwnedLinkedList<T>
     return ll
 
 /**
- * Own a list preventing automatic deletion by WurstFP methods
+ * Own a list preventing automatic deletion by Lodash methods
  */
 public function ownList<T>(LinkedList<T> list) returns OwnedLinkedList<T>
     let l = new OwnedLinkedList<T>
@@ -265,7 +274,7 @@ public function ownList<T>(LinkedList<T> list) returns OwnedLinkedList<T>
     return l
 
 /**
- * Own a list preventing automatic deletion by WurstFP methods
+ * Own a map preventing automatic deletion by Lodash methods
  */
 public function ownMap<K, V>(IterableMap<K, V> map) returns OwnedIterableMap<K, V>
     let m = new OwnedIterableMap<K, V>
