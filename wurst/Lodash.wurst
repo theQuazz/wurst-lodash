@@ -8,7 +8,7 @@ import HashSet
  */
 function makeMap<K, V>(vararg Pair<K, V> elems) returns IterableMap<K, V>
     let map = new IterableMap<K, V>()
-    for elem from elems
+    for elem in elems
         map.put(elem.a, elem.b)
     return map
 

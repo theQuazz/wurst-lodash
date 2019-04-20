@@ -1,0 +1,7 @@
+version: "3.7"
+
+services:
+  wurstscript:
+    image: frotty/wurstscript
+    volumes:
+      - .:/home/wurstuser/wurst-lodash
