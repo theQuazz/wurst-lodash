@@ -699,7 +699,7 @@ let list = asList(
     pair(2, "b"),
     pair(3, "c"),
     pair(4, "a"),
-    pair(5, "c"),
+    pair(5, "c")
 )
 
 list.groupBy(x -> x.b)
@@ -723,7 +723,7 @@ The iteratee is invoked with two arguments: (key, value). Example:
 let map = makeMap(
     pair(1, "a"),
     pair(2, "b"),
-    pair(3, "c"),
+    pair(3, "c")
 )
 
 map.mapValues(x -> x.toUpperCase())
@@ -747,7 +747,7 @@ The iteratee is invoked with two arguments: (key, value). Example:
 let map = makeMap(
     pair(1, "a"),
     pair(2, "b"),
-    pair(3, "c"),
+    pair(3, "c")
 )
 
 map.mapValues(x -> x + 1)
@@ -771,7 +771,7 @@ Example:
 let map = makeMap(
     pair(1, "a"),
     pair(2, "b"),
-    pair(3, "c"),
+    pair(3, "c")
 )
 
 map.toPairs()
@@ -795,7 +795,7 @@ Example:
 let map = asList(
     pair(1, "a"),
     pair(2, "b"),
-    pair(3, "c"),
+    pair(3, "c")
 )
 
 map.fromPairs()
