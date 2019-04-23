@@ -452,7 +452,7 @@ function toPairs()
 function fromPairs()
     // fromPairs<S, T>(LinkedList<Pair<S, T>> lst) returns IterableMap<S, T>
 
-    let map = new IterableMap<int, string>()
+    let map = new OwnedIterableMap<int, string>()
     ..put(1, "1")
     ..put(2, "2")
     ..put(3, "3")
@@ -471,6 +471,8 @@ function fromPairs()
         asList(pair(1, "1"), pair(2, "2")).fromPairs(),
         map
     ).assertFalse()
+
+    destroy map
 
 @Test
 function chunk()

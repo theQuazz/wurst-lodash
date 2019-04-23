@@ -847,7 +847,6 @@ asList(pair(1, "a"), pair(2, "b"), pair(3, "c"), pair(2, "d")).find(x -> x.a == 
 // => pair(2, "b")
 ```
 
-
 #### `findLast`
 
 ```typescript
