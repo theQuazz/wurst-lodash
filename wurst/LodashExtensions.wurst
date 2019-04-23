@@ -4,6 +4,18 @@ import HashMap
 import Lodash
 
 /**
+ * Own a LinkedList
+ */
+public function LinkedList<T>.own<T>() returns OwnedLinkedList<T>
+    return ownList(this)
+
+/**
+ * Own a IterableMap
+ */
+public function IterableMap<K, V>.own<K, V>() returns OwnedIterableMap<K, V>
+    return ownMap(this)
+
+/**
  * Checks for equality of two lists
  */
 public function LinkedList<T>.equals<T>(LinkedList<T> b) returns bool
@@ -259,3 +271,15 @@ public function LinkedList<T>.chunk<T>(int size) returns LinkedList<LinkedList<T
  */
 public function LinkedList<T>.pull<T>(T pull) returns LinkedList<T>
     return pull(this, pull)
+
+/**
+ * Returns the first element matching the predicate function.
+ */
+public function LinkedList<T>.find<T>(Predicate<T> func) returns T
+    return find(this, func)
+
+/**
+ * Returns the last element matching the predicate function.
+ */
+public function LinkedList<T>.findLast<T>(Predicate<T> func) returns T
+    return findLast(this, func)

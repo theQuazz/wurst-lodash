@@ -67,15 +67,17 @@ function maybeFree()
     asOwnedList(1, 2, 3).maybeFree().assertFalse()
     asList(1, 2, 3).maybeFree().assertTrue()
     ownList(asList(1, 2, 3)).maybeFree().assertFalse()
+    asList(1, 2, 3).own().maybeFree().assertFalse()
 
     new OwnedIterableMap<int, int>().maybeFree().assertFalse()
     new IterableMap<int, int>().maybeFree().assertTrue()
     ownMap(new IterableMap<int, int>()).maybeFree().assertFalse()
+    new IterableMap<int, int>().own().maybeFree().assertFalse()
 
-    pair(1, 2)..own().maybeFree().assertFalse()
+    pair(1, 2).own().maybeFree().assertFalse()
     pair(1, 2).maybeFree().assertTrue()
 
-    range()..own().maybeFree().assertFalse()
+    range().own().maybeFree().assertFalse()
     range().maybeFree().assertTrue()
 
 function isOwnedLinkedList(LinkedList<int> x) returns boolean
@@ -499,3 +501,33 @@ function pull()
         asList(1, 2, 3, 1, 2, 3).pull(3),
         asList(1, 2, 1, 2)
     ).assertTrue()
+
+@Test
+function find()
+    // find<T>(LinkedList<T> list, Predicate<T> func) returns T
+
+    asList(1, 2, 3, 4, 5).find(x -> x == 3).assertEquals(3)
+
+    let a = asList('a')
+    let first = asList('b')
+    let last = asList('b')
+
+    let list = asList(a, first, last, a)
+
+    let found = list.find(x -> x.peek() == 'b')
+    (found == first).assertTrue()
+
+@Test
+function findLast()
+    // findLast<T>(LinkedList<T> list, Predicate<T> func) returns T
+
+    asList(1, 2, 3, 4, 5).find(x -> x == 3).assertEquals(3)
+
+    let a = asList('a')
+    let first = asList('b')
+    let last = asList('b')
+
+    let list = asList(a, first, last, a)
+
+    let found = list.findLast(x -> x.peek() == 'b')
+    (found == last).assertTrue()

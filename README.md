@@ -30,6 +30,8 @@ Functional Programming Utilities for [WurstScript](https://wurstlang.org/) inspi
     - [`equals`](#equals)
     - [`every`](#every)
     - [`filter`](#filter)
+    - [`find`](#find)
+    - [`findLast`](#findLast)
     - [`flatten`](#flatten)
     - [`foldl`](#foldl)
     - [`foldr`](#foldr)
@@ -830,4 +832,31 @@ Removes all given values from list. Example:
 ```typescript
 asList(1, 2, 3, 4, 5, 4, 3, 2, 1).pull(3)
 // => [1, 2, 4, 5, 4, 2, 1]
+```
+
+#### `find`
+
+```typescript
+function LinkedList<T>.find<T>(Predicate<T> func) returns T
+```
+
+Returns the first element matching the predicate function. Example:
+
+```typescript
+asList(pair(1, "a"), pair(2, "b"), pair(3, "c"), pair(2, "d")).find(x -> x.a == 2)
+// => pair(2, "b")
+```
+
+
+#### `findLast`
+
+```typescript
+function LinkedList<T>.findLast<T>(Predicate<T> func) returns T
+```
+
+Returns the last element matching the predicate function. Example:
+
+```typescript
+asList(pair(1, "a"), pair(2, "b"), pair(3, "c"), pair(2, "d")).findLast(x -> x.a == 2)
+// => pair(2, "d")
 ```

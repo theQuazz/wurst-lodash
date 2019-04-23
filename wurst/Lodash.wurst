@@ -16,8 +16,9 @@ public abstract class Ownable
     * Own's this callable to prevent it from being freed automatically.
     * You must manually `destroy` this object to free it
     */
-    function own()
+    function own() returns thistype
         owned = true
+        return this
 
     /**
     * Destroys this callable if it has not been owned
@@ -320,6 +321,8 @@ public function equals<T>(LinkedList<T> a, LinkedList<T> b) returns bool
         let elemB = iter.next()
         if elemA != elemB
             return false
+    a.maybeFree()
+    b.maybeFree()
     return true
 
 /**
@@ -335,6 +338,8 @@ public function mapEquals<K, V>(IterableMap<K, V> a, IterableMap<K, V> b) return
         if a.get(key) != b.get(key)
             return false
     iter.close()
+    a.maybeFree()
+    b.maybeFree()
     return true
 
 /**
@@ -357,6 +362,8 @@ public function equals<T>(LinkedList<T> a, LinkedList<T> b, BiFunction<T, T, boo
         if not comparator.call(elemA, elemB)
             return false
     comparator.maybeFree()
+    a.maybeFree()
+    b.maybeFree()
     return true
 
 /**
@@ -539,6 +546,7 @@ public function flatten<T>(LinkedList<LinkedList<T>> list) returns LinkedList<T>
         for subElem from subIter
             result.add(subElem)
     iter.close()
+    list.maybeFree()
     return result
 
 /**
@@ -866,3 +874,35 @@ public function pull<T>(LinkedList<T> lst, T pull) returns LinkedList<T>
     iter.close()
     lst.maybeFree()
     return ret
+
+/**
+ * Returns the first element matching the predicate function.
+ */
+public function find<T>(LinkedList<T> list, Predicate<T> func) returns T
+    let iter = list.iterator()
+    for elem from iter
+        if func.call(elem)
+            iter.close()
+            list.maybeFree()
+            func.maybeFree()
+            return elem
+    iter.close()
+    list.maybeFree()
+    func.maybeFree()
+    return null
+
+/**
+ * Returns the last element matching the predicate function.
+ */
+public function findLast<T>(LinkedList<T> list, Predicate<T> func) returns T
+    let iter = list.backiterator()
+    for elem from iter
+        if func.call(elem)
+            iter.close()
+            list.maybeFree()
+            func.maybeFree()
+            return elem
+    iter.close()
+    list.maybeFree()
+    func.maybeFree()
+    return null
