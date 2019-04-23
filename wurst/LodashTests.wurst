@@ -600,5 +600,3 @@ function findLast()
 @Test
 function ownableLeaks()
     Ownable.count.assertEquals(initialOwnableCount)
-    print(IterableMap.count)
-    print(LinkedList.count)
