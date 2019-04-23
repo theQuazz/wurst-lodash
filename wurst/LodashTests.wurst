@@ -9,8 +9,6 @@ var initialOwnableCount = 0
 @Test
 function setInitialOwnableCount()
     initialOwnableCount = Ownable.count
-    print(IterableMap.count)
-    print(LinkedList.count)
 
 @Test
 function testRange()
