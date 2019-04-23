@@ -4,6 +4,14 @@ import HashMap
 import Lodash
 import LodashExtensions
 
+var initialOwnableCount = 0
+
+@Test
+function setInitialOwnableCount()
+    initialOwnableCount = Ownable.count
+    print(IterableMap.count)
+    print(LinkedList.count)
+
 @Test
 function testRange()
     let a = range(10)
@@ -19,6 +27,7 @@ function testRange()
     a.next().assertEquals(8)
     a.next().assertEquals(9)
     a.hasNext().assertFalse()
+    a.close()
 
     let b = range(5, 10)
     b.hasNext().assertTrue()
@@ -28,6 +37,7 @@ function testRange()
     b.next().assertEquals(8)
     b.next().assertEquals(9)
     b.hasNext().assertFalse()
+    b.close()
 
     let c = range(5, 10, 2)
     c.hasNext().assertTrue()
@@ -35,6 +45,7 @@ function testRange()
     c.next().assertEquals(7)
     c.next().assertEquals(9)
     c.hasNext().assertFalse()
+    c.close()
 
     equals(
         range(10).toList(),
@@ -51,12 +62,14 @@ function rangeStep()
     range.next().assertEquals(6)
     range.next().assertEquals(8)
     range.hasNext().assertFalse()
+    range.close()
 
 @Test
 function pair()
     let a = pair(1, 2)
     a.a.assertEquals(1)
     a.b.assertEquals(2)
+    destroy a
 
 @Test
 function maybeFree()
@@ -64,21 +77,37 @@ function maybeFree()
     // IterableMap<K, V>.maybeFree<K, V>()
     // Ownable.maybeFree()
 
-    asOwnedList(1, 2, 3).maybeFree().assertFalse()
     asList(1, 2, 3).maybeFree().assertTrue()
-    ownList(asList(1, 2, 3)).maybeFree().assertFalse()
-    asList(1, 2, 3).own().maybeFree().assertFalse()
 
-    new OwnedIterableMap<int, int>().maybeFree().assertFalse()
+    let a = asOwnedList(1, 2, 3)
+    a.maybeFree().assertFalse()
+    destroy a
+
+    let b = asList(1, 2, 3).own()
+    b.maybeFree().assertFalse()
+    destroy b
+
     new IterableMap<int, int>().maybeFree().assertTrue()
-    ownMap(new IterableMap<int, int>()).maybeFree().assertFalse()
-    new IterableMap<int, int>().own().maybeFree().assertFalse()
 
-    pair(1, 2).own().maybeFree().assertFalse()
+    let c = new OwnedIterableMap<int, int>()
+    c.maybeFree().assertFalse()
+    destroy c
+
+    let d = new IterableMap<int, int>().own()
+    d.maybeFree().assertFalse()
+    destroy d
+
     pair(1, 2).maybeFree().assertTrue()
 
-    range().own().maybeFree().assertFalse()
+    let e = pair(1, 2).own()
+    e.maybeFree().assertFalse()
+    destroy e
+
     range().maybeFree().assertTrue()
+
+    let f = range().own()
+    f.maybeFree().assertFalse()
+    destroy f
 
 function isOwnedLinkedList(LinkedList<int> x) returns boolean
     return x instanceof OwnedLinkedList<int>
@@ -92,6 +121,9 @@ function asOwnedList()
 
     isOwnedLinkedList(a).assertTrue()
     isOwnedLinkedList(b).assertFalse()
+
+    destroy a
+    destroy b
 
 @Test
 function equals()
@@ -139,13 +171,13 @@ function takeWhile()
     // takeWhile<T>(Predicate<T> predicate, LinkedList<T> list) returns LinkedList<T>
 
     equals(
-        asList(0, 1, 0, 3, 4, 5, 6).takeWhile(x -> x < 5),
+        asList(0, 1, 0, 3, 4, 5, 6).takeWhile((x, _idx) -> x < 5),
         asList(0, 1, 0, 3, 4)
     ).assertTrue()
 
 
     equals(
-        asList(0, 1, 0, 3, 4, 5, 6).takeWhile((x, idx, list) -> x < 3 and idx < 2),
+        asList(0, 1, 0, 3, 4, 5, 6).takeWhile((x, idx) -> x < 3 and idx < 2),
         asList(0, 1)
     ).assertTrue()
 
@@ -218,7 +250,6 @@ function values()
 
 @Test
 function map()
-    // map<T, Q>(Function<T, Q> transform, LinkedList<T> list) returns LinkedList<Q>
     // map<T, Q>(BiFunction<T, int, Q> transform, LinkedList<T> list) returns LinkedList<Q>
     // map<S, T, R>(IterableMap<S, T> map, BiFunction<S, T, R> transform) returns LinkedList<R>
 
@@ -303,10 +334,16 @@ function zipObject()
 function zip()
     // zip<A, B>(LinkedList<A> a, LinkedList<B> b) returns LinkedList<Pair<A, B>>
 
-    pairListEquals(
-        asList(1, 2, 3).zip(asList(2, 3, 4)),
-        asList(pair(1, 2), pair(2, 3), pair(3, 4))
-    ).assertTrue()
+    let a = asList(1, 2, 3).zip(asList(2, 3, 4)).own()
+    let b = asOwnedList(pair(1, 2), pair(2, 3), pair(3, 4))
+
+    pairListEquals(a, b).assertTrue()
+
+    a.each(x -> destroy x)
+    b.each(x -> destroy x)
+
+    destroy b
+    destroy a
 
 @Test
 function uniq()
@@ -375,6 +412,13 @@ function indexBy()
 
     result.size().assertEquals(3)
 
+    for key in expected
+        destroy expected.get(key)
+        destroy result.get(key)
+
+    destroy expected
+    destroy result
+
 @Test
 function groupBy()
     // groupBy<T, R>(LinkedList<T> lst, Function<T, R> idx) returns IterableMap<R, LinkedList<T>>
@@ -390,6 +434,9 @@ function groupBy()
 
     result.size().assertEquals(2)
 
+    destroy result
+    destroy expected
+
 @Test
 function mapValues()
     // mapValues<S, T, R>(IterableMap<S, T> map, BiFunction<S, T, R> transform) returns IterableMap<S, R>
@@ -399,7 +446,7 @@ function mapValues()
     ..put(2, "2")
     ..put(3, "3")
 
-    let b = new IterableMap<int, string>()
+    let b = new OwnedIterableMap<int, string>()
     ..put(1, "11")
     ..put(2, "22")
     ..put(3, "33")
@@ -410,6 +457,9 @@ function mapValues()
         b
     ).assertTrue()
 
+    destroy a
+    destroy b
+
 @Test
 function mapKeys()
     // mapKeys<S, T, R>(IterableMap<S, T> map, BiFunction<S, T, R> transform) returns IterableMap<R, T>
@@ -419,7 +469,7 @@ function mapKeys()
     ..put(2, "2")
     ..put(3, "3")
 
-    let b = new IterableMap<int, string>()
+    let b = new OwnedIterableMap<int, string>()
     ..put(1, "1")
     ..put(4, "2")
     ..put(9, "3")
@@ -429,6 +479,9 @@ function mapKeys()
         a.mapKeys((key, value) -> key * key),
         b
     ).assertTrue()
+
+    destroy a
+    destroy b
 
 @Test
 function toPairs()
@@ -447,6 +500,8 @@ function toPairs()
     pairs.get(1).b.assertEquals("2")
     pairs.get(2).a.assertEquals(3)
     pairs.get(2).b.assertEquals("3")
+
+    pairs.each(pair -> destroy pair)
 
 @Test
 function fromPairs()
@@ -519,6 +574,10 @@ function find()
     let found = list.find(x -> x.peek() == 'b')
     (found == first).assertTrue()
 
+    destroy a
+    destroy first
+    destroy last
+
 @Test
 function findLast()
     // findLast<T>(LinkedList<T> list, Predicate<T> func) returns T
@@ -533,3 +592,13 @@ function findLast()
 
     let found = list.findLast(x -> x.peek() == 'b')
     (found == last).assertTrue()
+
+    destroy a
+    destroy first
+    destroy last
+
+@Test
+function ownableLeaks()
+    Ownable.count.assertEquals(initialOwnableCount)
+    print(IterableMap.count)
+    print(LinkedList.count)

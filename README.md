@@ -334,18 +334,14 @@ a.equals(b) // => true
 #### `takeWhile`
 
 ```typescript
-function LinkedList<T>.takeWhile<T>(TriFunction<T, int, LinkedList<T>, bool> predicate) returns LinkedList<T>
-
 function LinkedList<T>.takeWhile<T>(BiFunction<T, int, bool> predicate) returns LinkedList<T>
-
-function LinkedList<T>.takeWhile<T>(Predicate<T> predicate) returns LinkedList<T>
 ```
 
 Creates a slice of list with elements taken from the beginning. Elements are taken until predicate returns falsey.
 The predicate is invoked with one to three argument(s): (value, index, list). Example:
 
 ```typescript
-range(5).takeWhile(x -> x < 3) // => [0, 1, 2]
+range(5).takeWhile((x, _i) -> x < 3) // => [0, 1, 2]
 ```
 
 #### `take`

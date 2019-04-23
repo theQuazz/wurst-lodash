@@ -10,7 +10,14 @@ import HashSet
  * Methods in the Lodash library will attempt to free callables that they are passed
  */
 public abstract class Ownable
+    static var count = 0
     var owned = false
+
+    construct()
+        count += 1
+
+    ondestroy
+        count -= 1
 
     /**
     * Own's this callable to prevent it from being freed automatically.
@@ -313,14 +320,26 @@ function makeMap<K, V>(vararg Pair<K, V> elems) returns IterableMap<K, V>
  */
 public function equals<T>(LinkedList<T> a, LinkedList<T> b) returns bool
     if a == b
+        if a != null
+            a.maybeFree()
+        if b != null
+            b.maybeFree()
         return true
     if a == null or b == null or a.size() != b.size()
+        if a != null
+            a.maybeFree()
+        if b != null
+            b.maybeFree()
         return false
     let iter = b.iterator()
     for elemA in a
         let elemB = iter.next()
         if elemA != elemB
+            iter.close()
+            a.maybeFree()
+            b.maybeFree()
             return false
+    iter.close()
     a.maybeFree()
     b.maybeFree()
     return true
@@ -330,12 +349,23 @@ public function equals<T>(LinkedList<T> a, LinkedList<T> b) returns bool
  */
 public function mapEquals<K, V>(IterableMap<K, V> a, IterableMap<K, V> b) returns bool
     if a == b
+        if a != null
+            a.maybeFree()
+        if b != null
+            b.maybeFree()
         return true
     if a == null or b == null or a.size() != b.size()
+        if a != null
+            a.maybeFree()
+        if b != null
+            b.maybeFree()
         return false
     let iter = a.iterator()
     for key from iter
         if a.get(key) != b.get(key)
+            iter.close()
+            a.maybeFree()
+            b.maybeFree()
             return false
     iter.close()
     a.maybeFree()
@@ -353,14 +383,29 @@ public function pairEquals<A, B>(Pair<A, B> a, Pair<A, B> b) returns bool
  */
 public function equals<T>(LinkedList<T> a, LinkedList<T> b, BiFunction<T, T, bool> comparator) returns bool
     if a == b
+        comparator.maybeFree()
+        if a != null
+            a.maybeFree()
+        if b != null
+            b.maybeFree()
         return true
     if a == null or b == null or a.size() != b.size()
+        comparator.maybeFree()
+        if a != null
+            a.maybeFree()
+        if b != null
+            b.maybeFree()
         return false
     let iter = b.iterator()
     for elemA in a
         let elemB = iter.next()
         if not comparator.call(elemA, elemB)
+            iter.close()
+            comparator.maybeFree()
+            a.maybeFree()
+            b.maybeFree()
             return false
+    iter.close()
     comparator.maybeFree()
     a.maybeFree()
     b.maybeFree()
@@ -376,34 +421,16 @@ public function pairListEquals<A, B>(LinkedList<Pair<A, B>> a, LinkedList<Pair<A
  * Creates a slice of list with elements taken from the beginning. Elements are taken until predicate returns falsey.
  * The predicate is invoked with three arguments: (value, index, list).
  */
-public function takeWhile<T>(TriFunction<T, int, LinkedList<T>, bool> predicate, LinkedList<T> list) returns LinkedList<T>
+public function takeWhile<T>(BiFunction<T, int, bool> predicate, LinkedList<T> list) returns LinkedList<T>
     let result = new LinkedList<T>()
     let iter = list.iterator()
     for elem from iter
-        if not predicate.call(elem, result.size(), list)
+        if not predicate.call(elem, result.size())
             break
         result.add(elem)
     iter.close()
     predicate.maybeFree()
     list.maybeFree()
-    return result
-
-/**
- * Creates a slice of list with elements taken from the beginning. Elements are taken until predicate returns falsey.
- * The predicate is invoked with two arguments: (value, index).
- */
-public function takeWhile<T>(BiFunction<T, int, bool> predicate, LinkedList<T> list) returns LinkedList<T>
-    let result = takeWhile((x, y, _z) -> predicate.call(x, y), list)
-    predicate.maybeFree()
-    return result
-
-/**
- * Creates a slice of list with elements taken from the beginning. Elements are taken until predicate returns falsey.
- * The predicate is invoked with one argument: (value).
- */
-public function takeWhile<T>(Predicate<T> predicate, LinkedList<T> list) returns LinkedList<T>
-    let result = takeWhile((x, _y, _z) -> predicate.call(x), list)
-    predicate.maybeFree()
     return result
 
 /**
@@ -460,6 +487,8 @@ public function every<T>(Predicate<T> predicate, LinkedList<T> list) returns boo
     for elem from iter
         if not predicate.call(elem)
             iter.close()
+            list.maybeFree()
+            predicate.maybeFree()
             return false
     iter.close()
     list.maybeFree()
@@ -475,6 +504,8 @@ public function any<T>(Predicate<T> predicate, LinkedList<T> list) returns bool
     for elem from iter
         if predicate.call(elem)
             iter.close()
+            list.maybeFree()
+            predicate.maybeFree()
             return true
     iter.close()
     list.maybeFree()
@@ -532,6 +563,7 @@ public function mapMap<S, T, R>(BiFunction<S, T, R> transform, IterableMap<S, T>
         let val = transform.call(key, map.get(key))
         res.add(val)
     iter.close()
+    transform.maybeFree()
     map.maybeFree()
     return res
 
@@ -545,6 +577,7 @@ public function flatten<T>(LinkedList<LinkedList<T>> list) returns LinkedList<T>
         let subIter = elem.iterator()
         for subElem from subIter
             result.add(subElem)
+        elem.maybeFree()
     iter.close()
     list.maybeFree()
     return result
@@ -605,8 +638,10 @@ public function length<T>(LinkedList<T> list) returns int
  * The iteratee is invoked with one argument: (value).
  */
 public function each<T>(VoidFunction<T> func, LinkedList<T> list)
-    for elem in list
+    let iter = list.iterator()
+    for elem from iter
         func.call(elem)
+    iter.close()
     list.maybeFree()
     func.maybeFree()
 
@@ -616,9 +651,11 @@ public function each<T>(VoidFunction<T> func, LinkedList<T> list)
  */
 public function each<T>(VoidBiFunction<T, int> func, LinkedList<T> list)
     var i = 0
-    for elem in list
+    let iter = list.iterator()
+    for elem from iter
         func.call(elem, i)
         i += 1
+    iter.close()
     list.maybeFree()
     func.maybeFree()
 
@@ -802,6 +839,7 @@ public function mapValues<S, T, R>(IterableMap<S, T> map, BiFunction<S, T, R> tr
         let val = transform.call(key, map.get(key))
         res.put(key, val)
     iter.close()
+    transform.maybeFree()
     map.maybeFree()
     return res
 
@@ -817,6 +855,7 @@ public function mapKeys<S, T, R>(IterableMap<S, T> map, BiFunction<S, T, R> tran
         let newKey = transform.call(key, map.get(key))
         res.put(newKey, val)
     iter.close()
+    transform.maybeFree()
     map.maybeFree()
     return res
 

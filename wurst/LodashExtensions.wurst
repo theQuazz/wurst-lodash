@@ -35,24 +35,10 @@ public function Pair<A, B>.equals<A, B>(Pair<A, B> b) returns bool
 
 /**
  * Creates a slice of list with elements taken from the beginning. Elements are taken until predicate returns falsey.
- * The predicate is invoked with three arguments: (value, index, list).
- */
-public function LinkedList<T>.takeWhile<T>(TriFunction<T, int, LinkedList<T>, bool> predicate) returns LinkedList<T>
-    return takeWhile(predicate, this)
-
-/**
- * Creates a slice of list with elements taken from the beginning. Elements are taken until predicate returns falsey.
  * The predicate is invoked with two arguments: (value, index).
  */
 public function LinkedList<T>.takeWhile<T>(BiFunction<T, int, bool> predicate) returns LinkedList<T>
-    return this.takeWhile((x, y, _z) -> predicate.call(x, y))
-
-/**
- * Creates a slice of list with elements taken from the beginning. Elements are taken until predicate returns falsey.
- * The predicate is invoked with one argument: (value).
- */
-public function LinkedList<T>.takeWhile<T>(Predicate<T> predicate) returns LinkedList<T>
-    return this.takeWhile((x, _y, _z) -> predicate.call(x))
+    return takeWhile(predicate, this)
 
 /**
  * Creates a slice of list with numElems elements taken from the beginning.
