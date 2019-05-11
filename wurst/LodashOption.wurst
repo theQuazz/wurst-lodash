@@ -179,6 +179,15 @@ function Option<T>.orElse<T>(EmptyFunction<Option<T>> func) returns Option<T>
     func.maybeFree()
     return result
 
+enum OptionState
+    SOME
+    NONE
+
+function Option<T>.state<T>() returns OptionState
+    return this.isSome()
+        ? OptionState.SOME
+        : OptionState.NONE
+
 @Test
 function map()
     let a = some(5)
@@ -210,4 +219,8 @@ function result()
         .andThen(x -> some(x + " there"))
         .orElse(-> some("bar"))
 
-    foo.unwrap().assertEquals("hi there")
+    switch foo.state()
+        case OptionState.SOME
+            foo.unwrap().assertEquals("hi there")
+        case OptionState.NONE
+            true.assertFalse()
