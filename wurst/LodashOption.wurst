@@ -1,0 +1,213 @@
+package LodashOption
+import Lodash
+import ErrorHandling
+
+class Error<T> extends Ownable
+    T value
+
+    construct(T value)
+        this.value = value
+
+class Result<T, E> extends Ownable
+    T value = null
+    Error<E> error = null
+
+    construct(T value, E error)
+        this.value = value
+        this.error = new Error(error)
+
+function ok<T, E>(T value) returns Result<T, E>
+    return new Result<T, E>(value, null)
+
+function err<T, E>(E error) returns Result<T, E>
+    return new Result<T, E>(null, error)
+
+function Result<T, E>.isOk<T, E>() returns bool
+    return this.value != null
+
+function Result<T, E>.isErr<T, E>() returns bool
+    return this.error != null
+
+function Result<T, E>.ok<T, E>() returns Option<T>
+    let result = this.isOk()
+        ? some(this.value)
+        : none<T>()
+    this.maybeFree()
+    return result
+
+function Result<T, E>.err<T, E>() returns Option<E>
+    let result = this.isErr()
+        ? some(this.error.value)
+        : none<E>()
+    this.maybeFree()
+    return result
+
+class Option<T> extends Ownable
+    protected T value = null
+
+    construct()
+
+    construct(T value)
+        this.value = value
+
+function none<T>() returns Option<T>
+    return new Option<T>()
+
+function some<T>(T value) returns Option<T>
+    return new Option<T>(value)
+
+function Option<T>.isSome<T>() returns bool
+    return this.value != null
+
+function Option<T>.isNone<T>() returns bool
+    return this.value == null
+
+function Option<T>.unwrap<T>() returns T
+    if this.isSome()
+        let value = this.value
+        this.maybeFree()
+        return value
+    error("Cannot unwrap none")
+    return null
+
+function Option<T>.unwrapOrElse<T>(EmptyFunction<T> func) returns T
+    if this.isSome()
+        let value = this.value
+        this.maybeFree()
+        return value
+    else
+        let result = func.call()
+        func.maybeFree()
+        return result
+
+function Option<T>.unwrapOr<T>(T defaultValue) returns T
+    if this.isSome()
+        let value = this.value
+        this.maybeFree()
+        return value
+    else
+        return defaultValue
+
+function Option<T>.map<T, R>(Function<T, R> func) returns Option<R>
+    Option<R> result
+    if this.isSome()
+        result = some(func.call(this.value))
+    else
+        result = none<R>()
+    func.maybeFree()
+    this.maybeFree()
+    return result
+
+function Option<T>.mapOr<T, R>(R defaultValue, Function<T, R> func) returns Option<R>
+    Option<R> result
+    if this.isSome()
+        result = some(func.call(this.value))
+    else
+        result = some(defaultValue)
+    func.maybeFree()
+    this.maybeFree()
+    return result
+
+function Option<T>.mapOrElse<T, R>(EmptyFunction<R> defaultValue, Function<T, R> func) returns Option<R>
+    Option<R> result
+    if this.isSome()
+        result = some(func.call(this.value))
+    else
+        result = some(defaultValue.call())
+    defaultValue.maybeFree()
+    func.maybeFree()
+    this.maybeFree()
+    return result
+
+function Option<T>.okOr<T, E>(E error) returns Result<T, E>
+    Result<T, E> result
+    if this.isSome()
+        result = ok<T, E>(this.value)
+    else
+        result = err<T, E>(error)
+    this.maybeFree()
+    return result
+
+function Option<T>.okOrElse<T, E>(EmptyFunction<E> func) returns Result<T, E>
+    Result<T, E> result
+    if this.isSome()
+        result = ok<T, E>(this.value)
+    else
+        result = err<T, E>(func.call())
+    func.maybeFree()
+    this.maybeFree()
+    return result
+
+function Option<T>._and<T, R>(Option<R> other) returns Option<R>
+    Option<R> result
+    if this.isSome()
+        result = other
+    else
+        result = none<R>()
+        other.maybeFree()
+    this.maybeFree()
+    return result
+
+function Option<T>.andThen<T, R>(Function<T, Option<R>> func) returns Option<R>
+    let result = this.isSome()
+        ? func.call(this.value)
+        : none<R>()
+    func.maybeFree()
+    this.maybeFree()
+    return result
+
+function Option<T>.filter<T>(Predicate<T> func) returns Option<T>
+    let result = this.isSome() and func.call(this.value)
+        ? this
+        : none<T>()
+    func.maybeFree()
+    return result
+
+function Option<T>._or<T>(Option<T> other) returns Option<T>
+    if this.isSome()
+        other.maybeFree()
+        return this
+    else
+        this.maybeFree()
+        return other
+
+function Option<T>.orElse<T>(EmptyFunction<Option<T>> func) returns Option<T>
+    var result = this
+    if this.isNone()
+        this.maybeFree()
+        result = func.call()
+    func.maybeFree()
+    return result
+
+@Test
+function map()
+    let a = some(5)
+    let b = none<int>()
+
+    a.isSome().assertTrue()
+    a.isNone().assertFalse()
+
+    b.isNone().assertTrue()
+    b.isSome().assertFalse()
+
+    a.map(x -> x * 2).isSome().assertTrue()
+    b.map(x -> x * 2).isSome().assertFalse()
+
+    a.map(x -> x * 2).unwrap().assertEquals(10)
+    a.map(x -> x * 2).map(x -> begin
+        x.assertEquals(10)
+        return x
+    end)
+
+@Test
+function result()
+    let result = ok<int, string>(5)
+    let foo = result
+        .ok()
+        .map(x -> x.pow(2))
+        .filter(x -> x < 100)
+        .andThen(x -> some("hi"))
+        .andThen(x -> some(x + " there"))
+        .orElse(-> some("bar"))
+
+    foo.unwrap().assertEquals("hi there")
