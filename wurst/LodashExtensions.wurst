@@ -137,6 +137,30 @@ public function LinkedList<real>.sum() returns real
     return sum(this)
 
 /**
+ * Computes the max of the values in list.
+ */
+public function LinkedList<int>.max() returns int
+    return max(this)
+
+/**
+ * Computes the max of the values in list.
+ */
+public function LinkedList<real>.max() returns real
+    return max(this)
+
+/**
+ * Computes the min of the values in list.
+ */
+public function LinkedList<int>.min() returns int
+    return min(this)
+
+/**
+ * Computes the min of the values in list.
+ */
+public function LinkedList<real>.min() returns real
+    return min(this)
+
+/**
  * Gets the length of list and maybe frees it
  */
 public function LinkedList<T>.length<T>() returns int

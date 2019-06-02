@@ -626,6 +626,30 @@ public function sum(LinkedList<real> list) returns real
     return foldl(0.0, (value, elem) -> value + elem, list)
 
 /**
+ * Computes the maximum of the values in list.
+ */
+public function max(LinkedList<int> list) returns int
+    return foldl(INT_MIN, (value, elem) -> max(value, elem), list)
+
+/**
+ * Computes the maximum of the values in list.
+ */
+public function max(LinkedList<real> list) returns real
+    return foldl(REAL_MIN, (value, elem) -> max(value, elem), list)
+
+/**
+ * Computes the minimum of the values in list.
+ */
+ public function min(LinkedList<int> list) returns int
+    return foldl(INT_MAX, (value, elem) -> min(value, elem), list)
+
+/**
+ * Computes the minimum of the values in list.
+ */
+ public function min(LinkedList<real> list) returns real
+    return foldl(REAL_MAX, (value, elem) -> min(value, elem), list)
+
+/**
  * Gets the length of list and maybe frees it
  */
 public function length<T>(LinkedList<T> list) returns int

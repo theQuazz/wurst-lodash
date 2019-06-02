@@ -44,6 +44,8 @@ Functional Programming Utilities for [WurstScript](https://wurstlang.org/) inspi
     - [`map`](#map)
     - [`mapKeys`](#mapKeys)
     - [`mapValues`](#mapValues)
+    - [`max`](#max)
+    - [`min`](#min)
     - [`pull`](#pull)
     - [`sum`](#sum)
     - [`take`](#take)
@@ -528,6 +530,38 @@ Computes the sum of the values in list. Example:
 asList(1, 2, 3).sum() // => 6
 
 asList(1.1, 2.2, 3.3).sum() // => 6.6
+```
+
+#### `max`
+
+```typescript
+function LinkedList<int>.max() returns int
+
+function LinkedList<real>.max() returns real
+```
+
+Computes the max of the values in list. Example:
+
+```typescript
+asList(1, 2, 3).max() // => 3
+
+asList(1.1, 2.2, 3.3).max() // => 3.3
+```
+
+#### `min`
+
+```typescript
+function LinkedList<int>.min() returns int
+
+function LinkedList<real>.min() returns real
+```
+
+Computes the min of the values in list. Example:
+
+```typescript
+asList(1, 2, 3).min() // => 1
+
+asList(1.1, 2.2, 3.3).min() // => 1.1
 ```
 
 #### `length`
