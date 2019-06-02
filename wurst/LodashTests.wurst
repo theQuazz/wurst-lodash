@@ -313,7 +313,6 @@ function max()
 function min()
     // min(LinkedList<int> list) returns int
     // min(LinkedList<real> list) returns real
-
     asList(1, 2, 3).min().assertEquals(1)
     asList(1.1, 2.2, 3.3).min().assertEquals(1.1)
 
