@@ -4,7 +4,6 @@
 
 Functional Programming Utilities for [WurstScript](https://wurstlang.org/) inspired by [Lodash](https://lodash.com/docs/)
 
-
 - [`package Lodash`](#package-lodash)
     - [`ownList`](#ownList)
     - [`ownMap`](#ownMap)
