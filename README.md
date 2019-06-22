@@ -1,3 +1,5 @@
+https://i.imgur.com/p1HsMJZ.jpg
+
 # Lodash
 
 [![CircleCI](https://circleci.com/gh/theQuazz/wurst-lodash.svg?style=svg)](https://circleci.com/gh/theQuazz/wurst-lodash)
