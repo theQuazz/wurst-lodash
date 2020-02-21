@@ -343,7 +343,7 @@ Creates a slice of list with elements taken from the beginning. Elements are tak
 The predicate is invoked with one to three argument(s): (value, index, list). Example:
 
 ```typescript
-range(5).takeWhile((x, _i) -> x < 3) // => [0, 1, 2]
+asList(1, 2, 3, 4, 5).takeWhile((x, _i) -> x < 3) // => [0, 1, 2]
 ```
 
 #### `take`
