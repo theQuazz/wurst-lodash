@@ -360,10 +360,10 @@ function zip()
 
 @Test
 function product()
-    // zip<A, B>(LinkedList<A> a, LinkedList<B> b) returns LinkedList<Pair<A, B>>
+    // product<A, B>(LinkedList<A> a, LinkedList<B> b) returns LinkedList<Pair<A, B>>
 
-    let a = asList(1, 2).zip(asList(3, 4)).own()
-    let b = asOwnedList(pair(1, 2), pair(1, 4), pair(2, 3), pair(2, 4))
+    let a = asList(1, 2).product(asList(3, 4)).own()
+    let b = asOwnedList(pair(1, 3), pair(1, 4), pair(2, 3), pair(2, 4))
 
     pairListEquals(a, b).assertTrue()
 

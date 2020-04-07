@@ -862,7 +862,7 @@ Creates a list containing pairs representing the Cartesian product of the two gi
 
 ```typescript
 asList(1, 2).product(asList(3, 4))
-// => [pair(1, 2), pair(1, 4), pair(2, 3), pair(2, 4)]
+// => [pair(1, 3), pair(1, 4), pair(2, 3), pair(2, 4)]
 ```
 
 #### `pull`
