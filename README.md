@@ -46,6 +46,7 @@ Functional Programming Utilities for [WurstScript](https://wurstlang.org/) inspi
     - [`mapValues`](#mapValues)
     - [`max`](#max)
     - [`min`](#min)
+    - [`product`](#product)
     - [`pull`](#pull)
     - [`sum`](#sum)
     - [`take`](#take)
@@ -849,6 +850,19 @@ Creates a list of elements split into groups the length of size. If list can't b
 ```typescript
 asList(1, 2, 3, 4, 5, 6, 7, 8).chunk(3)
 // => [[1, 2, 3], [4, 5, 6], [7, 8]]
+```
+
+#### `product`
+
+```typescript
+function LinkedList<A>.product<A, B>(LinkedList<B> lst) returns LinkedList<Pair<A, B>>
+```
+
+Creates a list containing pairs representing the Cartesian product of the two given lists.
+
+```typescript
+asList(1, 2).product(asList(3, 4))
+// => [pair(1, 3), pair(1, 4), pair(2, 3), pair(2, 4)]
 ```
 
 #### `pull`

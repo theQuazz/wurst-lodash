@@ -718,6 +718,23 @@ public function zip<A, B>(LinkedList<A> a, LinkedList<B> b) returns LinkedList<P
     return lst
 
 /**
+ * Creates a list containing pairs representing the Cartesian product of the two given lists.
+ */
+public function product<A, B>(LinkedList<A> a, LinkedList<B> b) returns LinkedList<Pair<A, B>>
+    let lst = new LinkedList<Pair<A, B>>()
+    let iterA = a.iterator()
+    while iterA.hasNext()
+        let currentA = iterA.next()
+        let iterB = b.iterator()
+        while iterB.hasNext()
+            lst.add(pair(currentA, iterB.next()))
+        iterB.close()
+    iterA.close()
+    a.maybeFree()
+    b.maybeFree()
+    return lst
+
+/**
  * Creates a duplicate-free version of an list in which only the first occurrence
  * of each element is kept. The order of result values is determined by the order
  * they occur in the list.
