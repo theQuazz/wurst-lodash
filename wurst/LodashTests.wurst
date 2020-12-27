@@ -2,7 +2,6 @@ package LodashTests
 import LinkedList
 import HashMap
 import Lodash
-import LodashExtensions
 
 var initialOwnableCount = 0
 
