@@ -3,6 +3,9 @@ import LinkedList
 import HashMap
 import HashSet
 
+// Make all extensions visible in the primary package.
+import public initlater LodashExtensions
+
 /**
  * Ownable object
  *
