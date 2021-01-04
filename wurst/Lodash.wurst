@@ -653,6 +653,14 @@ public function max(LinkedList<real> list) returns real
     return foldl(REAL_MAX, (value, elem) -> min(value, elem), list)
 
 /**
+ * Concatenates the values in a list using a separator and maybe frees it.
+ */
+ public function join(LinkedList<string> list, string separator) returns string
+    let result = list.joinBy(separator)
+    list.maybeFree()
+    return result
+
+/**
  * Gets the length of list and maybe frees it
  */
 public function length<T>(LinkedList<T> list) returns int

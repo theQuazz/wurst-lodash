@@ -316,6 +316,11 @@ function min()
     asList(1.1, 2.2, 3.3).min().assertEquals(1.1)
 
 @Test
+function join()
+    // join(LinkedList<string> list, string separator) returns string
+    asList("a", "b", "c").join(", ").assertEquals("a, b, c")
+
+@Test
 function length()
     // length<T>(LinkedList<T> list) returns int
 
