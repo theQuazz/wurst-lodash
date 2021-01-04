@@ -41,6 +41,7 @@ Functional Programming Utilities for [WurstScript](https://wurstlang.org/) inspi
     - [`groupBy`](#groupBy)
     - [`indexBy`](#indexBy)
     - [`intersection`](#intersection)
+    - [`join`](#join)
     - [`keys`](#keys)
     - [`length`](#length)
     - [`map`](#map)
@@ -421,6 +422,18 @@ The predicate is invoked with one argument: (value). Example:
 ```typescript
 asList(1, 2, 3, 4, 5).any(x -> x < 2) // => true
 asList(1, 2, 3, 4, 5).any(x -> x > 9) // => false
+```
+
+#### `join`
+
+```typescript
+function LinkedList<string>.join(string separator) returns string
+```
+
+Concatenates the strings in a list using a given separator. Example:
+
+```typescript
+asList("a", "b", "c").join(", ") // => "a, b, c"
 ```
 
 #### `keys`

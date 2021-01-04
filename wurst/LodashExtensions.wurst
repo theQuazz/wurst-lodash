@@ -161,6 +161,12 @@ public function LinkedList<real>.min() returns real
     return min(this)
 
 /**
+ * Concatenates the values in a list using a separator and maybe frees it.
+ */
+public function LinkedList<string>.join(string separator) returns string
+    return join(this, separator)
+
+/**
  * Gets the length of list and maybe frees it
  */
 public function LinkedList<T>.length<T>() returns int
