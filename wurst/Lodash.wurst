@@ -488,9 +488,7 @@ public function foldr<Q, T>(Q startValue, BiFunction<Q, T, Q> transform, LinkedL
 public function reduce<T>(BiFunction<T, T, T> transform, LinkedList<T> list) returns T
     let iter = list.iterator()
     var output = iter.hasNext() ? iter.next() : null
-    print("starting reduction")
     for elem from iter
-        print("reducing")
         output = transform.call(output, elem)
     iter.close()
     transform.maybeFree()
