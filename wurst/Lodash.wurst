@@ -482,6 +482,34 @@ public function foldr<Q, T>(Q startValue, BiFunction<Q, T, Q> transform, LinkedL
     return result
 
 /**
+ * Reduces collection similar to foldl, except that the initial value is the first element of the collection. Outputs
+ * null in the case of an empty collection.
+ */
+public function reduce<T>(BiFunction<T, T, T> transform, LinkedList<T> list) returns T
+    let iter = list.iterator()
+    var output = iter.hasNext() ? iter.next() : null
+    for elem from iter
+        output = transform.call(output, elem)
+    iter.close()
+    transform.maybeFree()
+    list.maybeFree()
+    return output
+
+/**
+ * Reduces collection similar to foldr, except that the initial value is the last element of the collection. Outputs
+ * null in the case of an empty collection.
+ */
+public function reduceRight<T>(BiFunction<T, T, T> transform, LinkedList<T> list) returns T
+    let iter = list.backiterator()
+    var output = iter.hasNext() ? iter.next() : null
+    for elem from iter
+        output = transform.call(output, elem)
+    iter.close()
+    transform.maybeFree()
+    list.maybeFree()
+    return output
+
+/**
  * Checks if predicate returns truthy for all elements of collection. Iteration is stopped once predicate returns falsey.
  * The predicate is invoked with one argument: (value).
  */
