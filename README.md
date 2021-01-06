@@ -51,6 +51,8 @@ Functional Programming Utilities for [WurstScript](https://wurstlang.org/) inspi
     - [`min`](#min)
     - [`product`](#product)
     - [`pull`](#pull)
+    - [`reduce`](#reduce)
+    - [`reduceRight`](#reduceRight)
     - [`sum`](#sum)
     - [`take`](#take)
     - [`takeWhile`](#takeWhile)
@@ -393,6 +395,41 @@ arguments: (accumulator, value). Example:
 ```typescript
 asList("h", "e", "l", "l", "o").foldr("", (acc, val) -> acc + val)
 // => "olleh"
+```
+
+#### `reduce`
+
+```typescript
+function LinkedList<T>.reduce<T>(BiFunction<T, T, T> transform) returns T
+```
+
+Reduces collection similar to foldl, except that the initial value is the first
+element of the collection. Outputs a default value in the case of an empty
+collection.
+
+```typescript
+asList(1, 2, 3, 4, 5).reduce((value, elem) -> value + elem) // => 15
+new LinkedList<int>()).reduce((value, elem) -> value + elem) // => 0
+asList("1", "2", "3").reduce((value, elem) -> value + elem) // => "123"
+new LinkedList<string>().reduce((value, elem) -> value + elem) // => ""
+asList(asList(1, 2), asList(3, 4)).reduce((value, elem) -> value..addAll(elem)) // => [1, 2, 3, 4]
+new LinkedList<LinkedList<int>>().reduce((value, elem) -> value..addAll(elem)) // => null
+```
+
+#### `reduceRight`
+
+```typescript
+function LinkedList<T>.reduce<T>(BiFunction<T, T, T> transform) returns T
+```
+
+Reduces collection similar to foldr, except that the initial value is the first
+element of the collection. Outputs a default value in the case of an empty
+collection.
+
+```typescript
+asList(1, 2, 3, 4, 5).reduce((value, elem) -> value + elem) // => 15
+new LinkedList<int>()).reduce((value, elem) -> value + elem) // => 0
+asList("1", "2", "3").reduce((value, elem) -> value + elem) // => "321"
 ```
 
 #### `every`

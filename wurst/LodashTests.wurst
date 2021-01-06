@@ -204,6 +204,25 @@ function foldr()
     asList(1, 2, 3).foldr("", (curr, memo) -> curr + memo.toString()).assertEquals("321")
 
 @Test
+function reduce()
+    // reduce<T>(BiFunction<T, T, T> transform, LinkedList<T> list) returns T
+
+    asList(1, 2, 3, 4, 5).reduce((value, elem) -> value + elem).assertEquals(15)
+    new LinkedList<int>().reduce((value, elem) -> value + elem).assertEquals(0)
+    asList("1", "2", "3").reduce((value, elem) -> value + elem).assertEquals("123")
+    new LinkedList<string>().reduce((value, elem) -> value + elem).assertEquals("")
+    asList(asList(1, 2), asList(3, 4)).reduce((value, elem) -> value..addAll(elem)).equals(asList(1, 2, 3, 4)).assertTrue()
+    new LinkedList<LinkedList<int>>().reduce((value, elem) -> value..addAll(elem)).equals(null).assertTrue()
+
+@Test
+function reduceRight()
+    // reduceRight<T>(BiFunction<T, T, T> transform, LinkedList<T> list) returns T
+
+    asList(1, 2, 3, 4, 5).reduceRight((value, elem) -> value + elem).assertEquals(15)
+    new LinkedList<int>().reduceRight((value, elem) -> value + elem).assertEquals(0)
+    asList("1", "2", "3").reduceRight((value, elem) -> value + elem).assertEquals("321")
+
+@Test
 function every()
     // every<T>(Predicate<T> predicate, LinkedList<T> list) returns bool
 
