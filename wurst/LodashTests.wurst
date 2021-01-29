@@ -335,6 +335,14 @@ function min()
     asList(1.1, 2.2, 3.3).min().assertEquals(1.1)
 
 @Test
+function mean()
+    // mean(LinkedList<int> list) returns real
+    // mean(LinkedList<real> list) returns real
+    asList(1, 2, 3).mean().assertEquals(2.)
+    asList(1, 2, 3, 4).mean().assertEquals(2.5)
+    asList(1.1, 2.2, 3.3).mean().assertEquals(2.2)
+
+@Test
 function join()
     // join(LinkedList<string> list, string separator) returns string
     asList("a", "b", "c").join(", ").assertEquals("a, b, c")
