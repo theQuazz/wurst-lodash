@@ -684,13 +684,15 @@ public function max(LinkedList<real> list) returns real
  * Computes the arithmetic mean of the values in list.
  */
  public function mean(LinkedList<int> list) returns real
-    return sum(list) / list.size().toReal()
+    let size = list.size() // Check before maybeFree
+    return sum(list) / size.toReal()
 
 /**
  * Computes the arithmetic mean of the values in list.
  */
  public function mean(LinkedList<real> list) returns real
-    return sum(list) / list.size().toReal()
+    let size = list.size() // Check before maybeFree
+    return sum(list) / size.toReal()
 
 /**
  * Concatenates the values in a list using a separator and maybe frees it.
