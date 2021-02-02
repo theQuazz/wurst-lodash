@@ -202,11 +202,11 @@ function map()
     a.map(x -> x * 2).isSome().assertTrue()
     b.map(x -> x * 2).isSome().assertFalse()
 
-    a.map(x -> x * 2).unwrap().assertEquals(10)
+    some(5).map(x -> x * 2).unwrap().assertEquals(10)
     some(5).map(x -> x * 2).map(x -> begin
         x.assertEquals(10)
         return x
-    end)
+    end).maybeFree()
 
 @Test
 function result()
