@@ -48,6 +48,7 @@ Functional Programming Utilities for [WurstScript](https://wurstlang.org/) inspi
     - [`mapKeys`](#mapKeys)
     - [`mapValues`](#mapValues)
     - [`max`](#max)
+    - [`mean`](#mean)
     - [`min`](#min)
     - [`product`](#product)
     - [`pull`](#pull)
@@ -615,6 +616,24 @@ Computes the min of the values in list. Example:
 asList(1, 2, 3).min() // => 1
 
 asList(1.1, 2.2, 3.3).min() // => 1.1
+```
+
+#### `mean`
+
+```typescript
+function LinkedList<int>.mean() returns real
+
+function LinkedList<real>.mean() returns real
+```
+
+Computes the arithmetic mean of the values in list. Example:
+
+```typescript
+asList(1, 2, 3).mean() // => 2
+
+asList(1, 2, 3, 4).mean() // => 2.5
+
+asList(1.1, 2.2, 3.3).min() // => 2.2
 ```
 
 #### `length`

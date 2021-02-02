@@ -175,6 +175,18 @@ public function LinkedList<real>.min() returns real
     return min(this)
 
 /**
+ * Computes the arithmetic mean of the values in list.
+ */
+public function LinkedList<int>.mean() returns real
+    return mean(this)
+
+/**
+ * Computes the arithmetic mean of the values in list.
+ */
+public function LinkedList<real>.mean() returns real
+    return mean(this)
+
+/**
  * Concatenates the values in a list using a separator and maybe frees it.
  */
 public function LinkedList<string>.join(string separator) returns string
