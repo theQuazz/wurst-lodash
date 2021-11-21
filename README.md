@@ -1,10 +1,18 @@
-![](https://i.imgur.com/p1HsMJZ.jpg)
+![68747470733a2f2f692e696d6775722e636f6d2f703148734d4a5a2e6a7067](https://user-images.githubusercontent.com/1486037/142765902-9df547eb-8792-4f55-9c41-0eb608f1f7e0.jpg)
 
 # Lodash
 
 [![CircleCI](https://circleci.com/gh/theQuazz/wurst-lodash.svg?style=svg)](https://circleci.com/gh/theQuazz/wurst-lodash)
 
 Functional Programming Utilities for [WurstScript](https://wurstlang.org/) inspired by [Lodash](https://lodash.com/docs/)
+
+## Installation
+
+Use grill to install wurst-lodash as a dependency.
+
+`$ grill install https://github.com/theQuazz/wurst-lodash`
+
+## Documentation
 
 - [`package Lodash`](#package-lodash)
     - [`ownList`](#ownList)
