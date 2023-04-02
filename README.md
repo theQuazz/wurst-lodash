@@ -63,6 +63,7 @@ Functional Programming Utilities for [WurstScript](https://wurstlang.org/) inspi
     - [`uniqBy`](#uniqBy)
     - [`values`](#values)
     - [`zipObject`](#zipObject)
+    - [`countBy`](#countBy)
 
 ## `package Lodash`
 
@@ -973,4 +974,17 @@ Returns the last element matching the predicate function. Example:
 ```typescript
 asList(pair(1, "a"), pair(2, "b"), pair(3, "c"), pair(2, "d")).findLast(x -> x.a == 2)
 // => pair(2, "d")
+```
+
+#### `countBy`
+
+```typescript
+function LinkedList<T>.countBy<T>(Predicate<T> predicate) returns int
+```
+
+Counts the elements returning truthy for all elements of collection.
+The predicate is invoked with one argument: (value). Example:
+
+```typescript
+asList(1, 1, 1, 4, 5, 6).countBy(x -> x < 5) // => 4
 ```

@@ -1039,3 +1039,18 @@ public function findLast<T>(LinkedList<T> list, Predicate<T> func) returns T
     list.maybeFree()
     func.maybeFree()
     return null
+
+/**
+ * Counts the elements returning truthy for all elements of collection.
+ * The predicate is invoked with one argument: (value).
+ */
+public function countBy<T>(Predicate<T> predicate, LinkedList<T> list) returns int
+    var count = 0
+    let iter = list.iterator()
+    for elem from iter
+        if predicate.call(elem)
+            count++
+    iter.close()
+    list.maybeFree()
+    predicate.maybeFree()
+    return count

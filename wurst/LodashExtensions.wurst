@@ -331,3 +331,10 @@ public function LinkedList<T>.find<T>(Predicate<T> func) returns T
  */
 public function LinkedList<T>.findLast<T>(Predicate<T> func) returns T
     return findLast(this, func)
+
+/**
+ * Counts the elements returning truthy for all elements of collection.
+ * The predicate is invoked with one argument: (value).
+ */
+public function LinkedList<T>.countBy<T>(Predicate<T> predicate) returns int
+    return countBy(predicate, this)
